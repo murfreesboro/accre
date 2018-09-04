@@ -1,0 +1,5 @@
+
+scontrol:
+
+scontrol show -dd job=jobID
+this is used to show the "running job" status. -dd will print out the slurm script for that job.
