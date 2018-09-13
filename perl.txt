@@ -1,0 +1,96 @@
+
+#########################################
+#  Perl ENV VAR:
+#########################################
+
+PERL_MM_OPT:
+
+Command line options used by MakeMaker->new() , and thus by WriteMakefile() . The string is split as the shell would, and the result 
+is processed before any actual command line arguments are processed.
+
+PERL_MM_OPT='CCFLAGS="-Wl,-rpath -Wl,/foo/bar/lib" LIBS="-lwibble -lwobble"'
+
+in short, this env variable is used to compile perl codes.
+
+PERL_MB_OPT
+
+Command line options that are applied to Build.PL or any Build action. The string is split as the shell would (e.g. whitespace) 
+and the result is prepended to any actual command-line arguments.
+
+
+############################################
+Using Perl's local::lib for Perl modules
+############################################
+https://srcc.stanford.edu/farmshare2/software-perllocallib
+
+local::lib lets you have your own Perl modules, while still running system Perl.
+
+local::lib lets you build and install your own Perl modules, without having to build and install your own Perl.  
+It uses the system's Perl, as well as as the system's build environment to build modules, which are then installed into your home directory.
+
+There are two major advantages to using local::lib:
+
+You do not have to install your own Perl.
+You can install whatever modules you want, without having to rely on SRCC to build and deploy them to a system Perl 
+(which might not be doable easily) or a Perl module.
+local::lib can be a quick way to begin installing your own modules when the existing system Perl already meets your needs. 
+However, there are also disadvantages to using local::lib:
+
+You are completely reliant on the system Perl, which might not be new enough for you.
+Only you have access to your Perl modules.  Since other people can't access your local::lib, they have to get access to a 
+system that has the necessary bits (Perl plus modules) installed already, or they have to use local::lib themselves.
+The modules you build are not portable.  You can not take a module that you built on FarmShare and copy it to Sherlock, 
+because different libary versions are in use.  Instead, you would have to build fresh in each environment.
+It is up to you to decide if local::lib is the right way to go, or if SRCC should build what you want instead. Or, 
+if you also need control over which Perl you want to use, Perlbrew might be a better option.
+
+local::lib Compatibility
+local::lib does what it does using environment variable tricks.  Because of that, you have to be careful when mixing 
+local::lib with other tools that also modify the environment:
+
+local::lib and Perlbrew
+Where local::lib only manages Perl modules, Perlbrew gives you an entire Perl
+environment that is your own.  However, you must be very careful, because using
+local::lib and Perlbrew might cause problems.  Perlbrew works by changing your
+$PATH environment variable to point to a local Perl installation, which is
+owned by you.  local::lib also changes $PATH, as well as other Perl-related
+variables, so even if Perlbrew's changes take precedence, the other environment
+variables may cause unexpected effects.
+
+To be safe, you should either just use a global local::lib or just use Perlbrew, not both.  
+Perlbrew can also manage multiple local::lib installations that are specific to each Perl you build.  Read more below.
+
+local::lib and Taint Mode
+One of the environment variables set by local::lib is $PERL5LIB.  This extends the list of places where Perl searches for modules.
+
+When a Perl script is run in taint mode, Perl intentionally ignores the
+$PERL5LIB environment variable.  Running a script in Taint mode can be
+specified by the user (by placing -T in the perl command line), but it can also
+be specified by the script itself.  The script does have a way of honoring
+$PERL5LIB even in taint mode (through the perl5lib module), but that is rarely
+used: The perl5lib module is a module, which if installed via local::lib,
+creates a Catch-22 situation.
+
+Perl code which uses taint mode will not be able to use modules loaded through local::lib.
+
+Software Module compatibility
+NOTE: In this section, we are talking about the software modules that are loaded using the module load command.  
+This section does not refer to Perl modules unless it explicitly says "Perl modules".
+
+Your local Perl modules might conflict with software modules loaded using the module load command.  
+There are several ways that conflicts can occur:
+
+If you use module load to load a module, that module wants a Perl module which
+you installed using local::lib, then you need to make sure local::lib is active
+in your session before you run the software.  If you load a GCC or clang
+software module, before you install a Perl module with local::lib, and that
+Perl module uses compiled code, then the Perl module will be built with that
+newer compiler (not the system compiler used for system Perl).  That should be
+OK, but you will want to test your newly-built Perl module without the
+GCC/clang software module loaded, just to be sure it works.  if you load a
+software module to get access to a shared library, and then build a Perl module
+which uses that shared library; then every time you want to use that Perl
+module, you will need to load that software module first (so that the Perl
+module is able to find the shared library).
+
+
