@@ -18,6 +18,10 @@
 \usepackage{ulem} % 下划线，波浪线
 
 \usepackage{listings} % display code on slides; don't forget [fragile] option after \begin{frame}
+\usepackage{verbatim}
+\makeatletter
+\def\verbatim@font{\tiny\ttfamily}
+\makeatother
 
 % ----------------------------------------------
 % tikx
@@ -135,6 +139,9 @@
 % 解决 font warning
 \renewcommand\textbullet{\ensuremath{\bullet}}
 
+% verbatim
+
+
 % ---------------------------------------------------------------------
 % flow chart
 \tikzset{
@@ -199,7 +206,7 @@
 
 %% preamble
 \title[Big Data Analysis In ACCRE]{Big Data Analysis In ACCRE}
-\subtitle{Introduction to Spark: I}
+\subtitle{Report on Learning Big Data Analysis: I}
 \author{Fenglai Liu}
 \institute[ACCRE]{fenglai@accre.vanderbilt.edu}
 
@@ -213,36 +220,85 @@
 \end{frame}
 
 \section{Introduction}
-\subsection{Purpose of the Slides}
+\subsection{General Thoughts about My Future Role}
 \begin{frame}
 %    \frametitle{}
 
-\begin{block}{How can I do as Application developer in ACCRE for big data analysis?}
+\begin{block}{What can I do as an application developer in ACCRE for big data analysis?}
 \begin{itemize}
  \item Teaching;
- \item Programming/help people solving programming problems;
- \item Help people on using the cluster for big data analysis
+ \item Programming/help people solving programming problems on big data;
+ \item Helping people on using the cluster for big data analysis
 \end{itemize}
 \end{block}
 
-I do not have too much experience working with hardware side, so debugging related to the system side is a heavy job for me. However, I have been doing software development for many years therefore the following two points are particular interesting to me:
+ As a software developer the following points on the big data analysis interest me:
 \begin{itemize}
- \item How to understand Spark collection from a software developer view?
- \item How to use Spark for project development purpose? For example, fast development, project design for high flexibility and low maintenance cost etc.
+ \item How to understand big data analysis from a traditional HPC programming view?
+ \item How to use the big data analysis for practical projects?
+\end{itemize}
+
+\end{frame}
+
+% -------------------------------------------------------------
+
+\begin{frame}
+%    \frametitle{}
+
+For the second question, it can be divided into more specific questions:
+
+\begin{description}
+ \item [Data]
+ \begin{itemize}
+  \item what kind of level of data is ``big data'' and can be benefit from big data analysis?
+  \item does big data analysis can be applied for all formats of data?
+  \item the practical usage for big data analysis?
+ \end{itemize}
+  \item [Tools]
+ \begin{itemize}
+  \item comparisons between the big data languages and traditional languages, like scala VS C++?
+  \item comparisons between the Spark VS openMP, MPI?  
+ \end{itemize}
+  \item [project]
+ \begin{itemize}
+  \item how large for a typical big data project?
+  \item fast development?
+  \item scalability on the cluster?
+ \end{itemize}
+\end{description} 
+
+\end{frame}
+
+% -------------------------------------------------------------
+
+\begin{frame}
+%    \frametitle{}
+
+Upon Will's suggestion, I started the big data analysis journey by beginning from Spark and Scala/Python.
+So in the following slices I will concentrate on the learning of Spark/Scala for the big data analysis.
+
+Aspects to be covered in this talk and following talks: 
+\begin{itemize}
+ \item How can we understand Spark/Scala conceptually? Features comparing with C++/OpenMP/MPI etc.?
+ \item How to use them for practical projects? From local jobs, to jobs on the cluster.
 \end{itemize}
 
 
 \end{frame}
+
+% -------------------------------------------------------------
 
 %% normal frame
 \subsection{General View for Spark}
 \begin{frame}
 %    \frametitle{}
 
-Spark is a ``framework for big data analysis. Why it is called a ``FRAMEWORK''? Because it is more than a collection of library:
+Spark is a ``framework'' for big data analysis. Why it is called a ``FRAMEWORK''? Because it is more than a collection of library:
 \begin{description}
  \item [library] Spark can be used a a library for Scala/Python/Java programming languages.
- \item [REPL] Refers to Read-Evaluate-Print-Loop. Spark itself has an inner shell environment, where the user can run the spark API in Scala interactively. Additionally, PySpark also has REPL function based on Python. 
+ \item [REPL] Refers to Read-Evaluate-Print-Loop. Spark itself has an inner shell environment, 
+ where the user can run the spark API in Scala interactively (key feature for fast development). 
+ PySpark also has REPL function based on Python. 
 \end{description}
 
 \end{frame}
@@ -251,42 +307,52 @@ Spark is a ``framework for big data analysis. Why it is called a ``FRAMEWORK''? 
 %    \frametitle{An Example}
 
     \begin{block}{How to think about the library VS. REPL for Spark?}
-    REPL is a good feature for fast development and testing/debugging purpose(Java does not have it). It is also good for teaching purpose, too. However, as the code growing and the project becomes more practical, library will be the only choice for production implementation.     
+    REPL is a good feature for fast development and testing/debugging purpose(for example, C++/Java do not have it). It is also 
+    good for teaching purpose, too. However, as the code growing and the project becomes more practical, library will be the only 
+    choice for production implementation.     
     \end{block}
-      
-\end{frame}
-
-\begin{frame}
-   
-   \begin{block}{Spark for cluster}
-   Spark is mostly powerful for running in a cluster mode. However, from a project viewpoint it is better to divide the implementation into two stages: firstly on the local computer with multi-threading for testing and debugging; secondly transfer the implementation to the cluster side for production.  
-   \end{block}
-   
-   In conclusion
+    
+    In conclusion
    \begin{enumerate}
-    \item  REPL $\Longrightarrow$ source codes;
-    \item  local implementation $\Longrightarrow$ cluster
+    \item  REPL $\Longrightarrow$ project;
+    \item  implementation on local multi-threading env $\Longrightarrow$ practical project on cluster
    \end{enumerate}
-  
+      
 \end{frame}
 
 \section{Spark Components}
 \subsection{SparkContext}
-\begin{frame}
+\begin{frame}[fragile]
     %\frametitle{An Example}
 
+   \begin{block}{SparkContext: the main entry point for the Spark functionality.}
+   The analog for the SparkContext  is like the MPI\_init function, which initializes the environment for cluster usage. 
+   For MPI the configuration information is passed through the MPIEXEC etc. Here SparkContext can use SparkConf
+   to set up the configuration information and initializes the Spark.
+   \end{block}
+   
+   Scala example:
+   \begin{verbatim}
+    import org.apache.spark.SparkConf
+    import org.apache.spark.SparkContext
+
+    // define the spark conf
+    val conf = new SparkConf()
+    conf.setMaster("local[*]")  // using all of available cores 
+    conf.setAppName("Spark App test") // set the application name
+
+    // now let's create a new SparkContext according to conf
+    val sc = new SparkContext(conf)
+   \end{verbatim}     
   
 \end{frame}
 
 \subsection{RDD - Resilient Distributed Dataset}
+\subsubsection{RDD Concepts}
 \begin{frame}
  %   \frametitle{How can we improve the diagnosis}
 
- RDD concepts;
- 
- RDD features;
- 
- How can we use it?
+
  
   
 \end{frame}
