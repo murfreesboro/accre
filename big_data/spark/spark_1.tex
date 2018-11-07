@@ -348,18 +348,34 @@ Spark is a ``framework'' for big data analysis. Why it is called a ``FRAMEWORK''
 \end{frame}
 
 \subsection{RDD - Resilient Distributed Dataset}
-\subsubsection{RDD Concepts}
+\subsubsection{RDD Concept and Features}
 \begin{frame}
  %   \frametitle{How can we improve the diagnosis}
 
-
- 
+RDD is simply a collection of data records. A similar thing to RDD is the block in HDFS. Conceptually 
+RDD has following features:
+\begin{itemize}
+ \item in memory;
+ \item resilient (fault-tolerant);
+ \item partitioned and distributed;
+ \item Lazy evaluated;
+\end{itemize} 
   
 \end{frame}
 
 
 \begin{frame}
 %    \frametitle{How can we improve the diagnosis}
+
+\begin{block}{\textbf{in memory}}
+ The biggest difference in my opinion between RDD and the block in HDFS is that RDD is stored in ``MEMORY''. It's able to transform
+ different dataset like HDFS, Amazon S3, Cassandra etc. (disk-stored) into RDD for Spark use. Secondly, ``in-memory'' also enable the REPL possible. Data processing and data analysis can be performed interactively. 
+\end{block}
+
+\begin{figure}
+ \includegraphics[scale=0.2]{rdd1}
+\caption{simple flowchart for RDD}
+\end{figure} 
 
  
 \end{frame}
