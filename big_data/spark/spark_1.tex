@@ -348,7 +348,18 @@ Spark is a ``framework'' for big data analysis. Why it is called a ``FRAMEWORK''
 \end{frame}
 
 \subsection{RDD - Resilient Distributed Dataset}
-\subsubsection{RDD Concept and Features}
+\begin{frame}
+ %   \frametitle{How can we improve the diagnosis}
+
+RDD is simply a collection of data records. It supports both structured data and unstructured data. 
+A similar thing to RDD is the data block in HDFS. Both data block in HDFS and RDD 
+is like a collection of the targeting data source, in unit of 64MB-128MB(default is 128MB for RDD and HDFS). 
+For example, if a data file is about 300MB, then there will be two RDD in 128MB and a remaining RDD in 44MB.
+
+
+  
+\end{frame}
+
 \begin{frame}
  %   \frametitle{How can we improve the diagnosis}
 
@@ -362,7 +373,6 @@ RDD has following features:
 \end{itemize} 
   
 \end{frame}
-
 
 \begin{frame}
 %    \frametitle{How can we improve the diagnosis}
