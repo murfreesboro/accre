@@ -351,26 +351,11 @@ Spark is a ``framework'' for big data analysis. Why it is called a ``FRAMEWORK''
 \begin{frame}
  %   \frametitle{How can we improve the diagnosis}
 
-RDD is simply a collection of data records. It supports both structured data and unstructured data. 
-A similar thing to RDD is the data block in HDFS. Both data block in HDFS and RDD 
-is like a collection of the targeting data source, in unit of 64MB-128MB(default is 128MB for RDD and HDFS). 
+RDD is simply a collection of data records stored in ``MEMORY''. It supports both structured data and unstructured data. 
+A similar thing compared with RDD is the data in HDFS. Both data in HDFS and RDD 
+is a collection of the targeting data source, in unit of 64MB-128MB(default is 128MB for RDD and HDFS).
+
 For example, if a data file is about 300MB, then there will be two RDD in 128MB and a remaining RDD in 44MB.
-
-
-  
-\end{frame}
-
-\begin{frame}
- %   \frametitle{How can we improve the diagnosis}
-
-RDD is simply a collection of data records. A similar thing to RDD is the block in HDFS. Conceptually 
-RDD has following features:
-\begin{itemize}
- \item in memory;
- \item resilient (fault-tolerant);
- \item partitioned and distributed;
- \item Lazy evaluated;
-\end{itemize} 
   
 \end{frame}
 
@@ -378,39 +363,85 @@ RDD has following features:
 %    \frametitle{How can we improve the diagnosis}
 
 \begin{block}{\textbf{in memory}}
- The biggest difference in my opinion between RDD and the block in HDFS is that RDD is stored in ``MEMORY''. It's able to transform
- different dataset like HDFS, Amazon S3, Cassandra etc. (disk-stored) into RDD for Spark use. Secondly, ``in-memory'' also enable the REPL possible. Data processing and data analysis can be performed interactively. 
+ The most noticeable feature for RDD is that RDD is stored in ``MEMORY''. It's able to transform
+ different dataset like HDFS, Amazon S3, Cassandra etc. (disk-stored) into RDD for Spark use. Secondly, ``in-memory'' also enable the 
+ REPL possible. Data processing and data analysis can be performed interactively. 
 \end{block}
 
-\begin{figure}
- \includegraphics[scale=0.2]{rdd1}
-\caption{simple flowchart for RDD}
-\end{figure} 
+%\begin{figure}
+ %\includegraphics[scale=0.2]{rdd1}
+%\caption{simple flowchart for RDD}
+%\end{figure} 
 
  
 \end{frame}
 
 
+\subsection{Partitions in RDD}
+\begin{frame}
+%    \frametitle{How can we improve the diagnosis}
+
+\begin{block}{\textbf{partition - the parallel unit}}
+ The dataset in RDD is in unit of ``partition'' (similar to the blocks in HDFS). Each partition is a dataset, and the whole RDD is stored as 
+ many partitions, and these partitions are distributed among the clusters.
+ 
+ The number of partition is also the index of parallelism for the Spark. Spark can only run 1 concurrent task for every partition of an RDD, 
+ up to the number of cores in your cluster. Therefore as one can imagine locality is important for Spark efficiency. A similar example to 
+ understand this situation in Spark is the ``false sharing'' in the Multi-threading.
+\end{block}
+ 
+\end{frame}
+
+\begin{frame}
+
+\begin{block}{\textbf{Hash type partition}}
+ There are two types of partitions in RDD, one is the ``Hash'' type of partition:
+ \begin{displaymath}
+  \text{(key1,value1)}  \quad \text{(key2,value2)} \quad \text{(key3,value3)}  \quad \cdots
+ \end{displaymath}
+\end{block}
+
+One important question is: whether the data structure is ``hash map''(allow unsynchronized of data) or ``hash table''(synchronized of data
+must be performed)? I guess the Hashed partitions in Spark is more like the ``ConcurrentHashMap'' in Java.  
+ 
+\end{frame}
+
+
+\begin{frame}[fragile]
+  %  \frametitle{How can we improve the diagnosis}
+
+  A simple case that the hash partion is created:
+  \begin{verbatim}
+  var rdd = sc.textFile (“file.txt”)   
+  \end{verbatim}
+  In this example 
+
+\end{frame}
+
+\begin{frame}
+
+  \begin{block}{\textbf{range type partition}}
+ \begin{displaymath}
+  \text{(1,value1)}  \quad \text{(2,value2)} \quad \text{(3,value3)}  \quad \cdots
+ \end{displaymath}
+\end{block}
+
+  
+\end{frame}
+
+\subsection{RDD Features}
 \begin{frame}
  %   \frametitle{How can we improve the diagnosis}
 
- 
-
-\end{frame}
-
-
-\begin{frame}
-  %  \frametitle{How can we improve the diagnosis}
-
+\begin{itemize}
+ \item in memory;
+ \item parallel;
+ \item resilient (fault-tolerant);
+ \item partitioned and distributed;
+ \item Lazy evaluated;
+\end{itemize} 
   
 \end{frame}
-
-\begin{frame}
-  %  \frametitle{How can we improve the diagnosis}
-
-  
-\end{frame}
-
 
 \end{document}
 
