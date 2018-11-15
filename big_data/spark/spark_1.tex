@@ -227,7 +227,7 @@
 \begin{block}{What can I do as an application developer in ACCRE for big data analysis?}
 \begin{itemize}
  \item Teaching;
- \item Programming/help people solving programming problems on big data;
+ \item Helping people solving programming problems on big data;
  \item Helping people on using the cluster for big data analysis
 \end{itemize}
 \end{block}
@@ -235,7 +235,8 @@
  As a software developer the following points on the big data analysis interest me:
 \begin{itemize}
  \item How to understand big data analysis from a traditional HPC programming view?
- \item How to use the big data analysis for practical projects?
+ \item How to understand the difference and similarity between the big data analysis and 
+ traditional HPC programming project?
 \end{itemize}
 
 \end{frame}
@@ -250,20 +251,19 @@ For the second question, it can be divided into more specific questions:
 \begin{description}
  \item [Data]
  \begin{itemize}
-  \item what kind of level of data is ``big data'' and can be benefit from big data analysis?
-  \item does big data analysis can be applied for all formats of data?
-  \item the practical usage for big data analysis?
+  \item What kind of level of data is ``big data'' and can be benefit from big data analysis?
+  \item Does big data analysis can be applied for all formats of data?
  \end{itemize}
   \item [Tools]
  \begin{itemize}
-  \item comparisons between the big data languages and traditional languages, like scala VS C++?
-  \item comparisons between the Spark VS openMP, MPI?  
+  \item Comparisons between the big data languages and traditional languages, like Scala VS C++?
+  \item Comparisons between the Spark VS openMP, MPI?  
  \end{itemize}
-  \item [project]
+  \item [Project]
  \begin{itemize}
-  \item how large for a typical big data project?
-  \item fast development?
-  \item scalability on the cluster?
+  \item How large for a typical big data project?
+  \item Fast development?
+  \item Scalability on the cluster?
  \end{itemize}
 \end{description} 
 
@@ -280,7 +280,7 @@ So in the following slices I will concentrate on the learning of Spark/Scala for
 Aspects to be covered in this talk and following talks: 
 \begin{itemize}
  \item How can we understand Spark/Scala conceptually? Features comparing with C++/OpenMP/MPI etc.?
- \item How to use them for practical projects? From local jobs, to jobs on the cluster.
+ \item How to use them for practical projects? From local jobs until to jobs on the cluster.
 \end{itemize}
 
 
@@ -293,22 +293,28 @@ Aspects to be covered in this talk and following talks:
 \begin{frame}
 %    \frametitle{}
 
-Spark is a ``framework'' for big data analysis. Why it is called a ``FRAMEWORK''? Because it is more than a collection of library:
+Spark is a ``framework'' for big data analysis. Why it is called a ``FRAMEWORK''? 
+Because it is more than a collection of library:
 \begin{description}
  \item [library] Spark can be used a a library for Scala/Python/Java programming languages.
  \item [REPL] Refers to Read-Evaluate-Print-Loop. Spark itself has an inner shell environment, 
  where the user can run the spark API in Scala interactively (key feature for fast development). 
  PySpark also has REPL function based on Python. 
+ \item [flexible extension] further API can be provided through Spark streaming like
+ machine learning etc.
 \end{description}
 
 \end{frame}
+% -------------------------------------------------------------
 
 \begin{frame}
-%    \frametitle{An Example}
+
 
     \begin{block}{How to think about the library VS. REPL for Spark?}
-    REPL is a good feature for fast development and testing/debugging purpose(for example, C++/Java do not have it). It is also 
-    good for teaching purpose, too. However, as the code growing and the project becomes more practical, library will be the only 
+    REPL is a good feature for fast development and testing/debugging purpose
+    (for example, C++/Java do not have it). It is also 
+    good for teaching purpose, too. However, as the code growing and the project 
+    becomes more practical, library will be the only 
     choice for production implementation.     
     \end{block}
     
@@ -319,15 +325,17 @@ Spark is a ``framework'' for big data analysis. Why it is called a ``FRAMEWORK''
    \end{enumerate}
       
 \end{frame}
+% -------------------------------------------------------------
 
-\section{Spark Components}
-\subsection{SparkContext}
+\section{SparkContext}
 \begin{frame}[fragile]
-    %\frametitle{An Example}
+  
 
    \begin{block}{SparkContext: the main entry point for the Spark functionality.}
    The analog for the SparkContext  is like the MPI\_init function, which initializes the environment for cluster usage. 
-   For MPI the configuration information is passed through the MPIEXEC etc. Here SparkContext can use SparkConf
+   For MPI the configuration information is passed through the MPIEXEC etc. then 
+   MPI\_init function can initialize the cluster environment for the application.
+   Here SparkContext can use SparkConf
    to set up the configuration information and initializes the Spark.
    \end{block}
    
@@ -347,53 +355,159 @@ Spark is a ``framework'' for big data analysis. Why it is called a ``FRAMEWORK''
   
 \end{frame}
 
-\subsection{RDD - Resilient Distributed Dataset}
+% -------------------------------------------------------------
+
+\section{Resilient Distributed Dataset}
+\subsection{What is RDD?}
 \begin{frame}
- %   \frametitle{How can we improve the diagnosis}
 
-RDD is simply a collection of data records stored in ``MEMORY''. It supports both structured data and unstructured data. 
-A similar thing compared with RDD is the data in HDFS. Both data in HDFS and RDD 
-is a collection of the targeting data source, in unit of 64MB-128MB(default is 128MB for RDD and HDFS).
-
-For example, if a data file is about 300MB, then there will be two RDD in 128MB and a remaining RDD in 44MB.
-  
-\end{frame}
-
-\begin{frame}
-%    \frametitle{How can we improve the diagnosis}
-
-\begin{block}{\textbf{in memory}}
- The most noticeable feature for RDD is that RDD is stored in ``MEMORY''. It's able to transform
- different dataset like HDFS, Amazon S3, Cassandra etc. (disk-stored) into RDD for Spark use. Secondly, ``in-memory'' also enable the 
- REPL possible. Data processing and data analysis can be performed interactively. 
-\end{block}
-
-%\begin{figure}
- %\includegraphics[scale=0.2]{rdd1}
-%\caption{simple flowchart for RDD}
-%\end{figure} 
-
+ \begin{block}{What is RDD?}
+  RDD is simply a collection of readable data records stored in ``MEMORY''(also it can be stored in disk, too). It supports both structured data and unstructured data. 
+ \end{block}
  
+ \begin{block}{in-memory}
+   The most noticeable feature for RDD is that RDD is stored in ``MEMORY''. 
+ It's able to transform different dataset like HDFS, Amazon S3, Cassandra etc. 
+ (disk-stored) into RDD for Spark use. Secondly, ``in-memory'' also enable the 
+ REPL possible. Data processing and data analysis can be performed interactively
+ in efficiency. 
+ \end{block}
+
+\end{frame}
+
+% -------------------------------------------------------------
+
+\section{Resilient Distributed Dataset}
+\begin{frame}
+
+\begin{figure}
+ \includegraphics[scale=0.4]{rdd1}
+\caption{A simple example demonstrate the relation between RDD and HDFS}
+\end{figure} 
+
 \end{frame}
 
 
-\subsection{Partitions in RDD}
+% -------------------------------------------------------------
+\subsection{Inside of RDD}
 \begin{frame}
-%    \frametitle{How can we improve the diagnosis}
 
-\begin{block}{\textbf{partition - the parallel unit}}
- The dataset in RDD is in unit of ``partition'' (similar to the blocks in HDFS). Each partition is a dataset, and the whole RDD is stored as 
+An RDD is mainly made up of 4 parts:
+\begin{description}
+ \item [Partitions] Atomic pieces of the dataset. One or many per RDD.
+ \item [Dependencies] Models relationship between this RDD and its partitions with the parent RDDs.
+ \item [Function] The function for computing the dataset based on its parent RDDs.
+ \item [Metadata] Metadata is about it partitioning scheme and data placement.
+\end{description}
+
+\end{frame}
+
+
+% -------------------------------------------------------------
+
+\begin{frame}
+
+\begin{block}{partition - the unit of RDD}
+ The dataset in RDD is in unit of ``partition'' (similar to the blocks in HDFS). 
+ Each partition is a slice of dataset, and the whole RDD is stored as 
  many partitions, and these partitions are distributed among the clusters.
- 
- The number of partition is also the index of parallelism for the Spark. Spark can only run 1 concurrent task for every partition of an RDD, 
- up to the number of cores in your cluster. Therefore as one can imagine locality is important for Spark efficiency. A similar example to 
- understand this situation in Spark is the ``false sharing'' in the Multi-threading.
 \end{block}
- 
+
+\begin{block}{metadata - the information about the partitions}
+ Metadata describes the information about the partitions - through the metadata you
+ can rebuild the whole dataset from the partitions.
+\end{block}
+
+
 \end{frame}
+
+% -------------------------------------------------------------
 
 \begin{frame}
 
+RDD operations:
+\begin{itemize}
+ \item transformation: transform the old RDD to new RDD (in other words,
+form the children RDD from the parent RDD)
+ \item action: operations on the RDD that returns the result (in general, 
+ non-RDD return)
+\end{itemize}
+
+\begin{alertblock}{data flow is immutable}
+ For big data analysis with Spark, the data flow is immutable. Therefore for the data flow we transform it from one type RDD to anther type of RDD. 
+\end{alertblock}
+
+\end{frame}
+
+% -------------------------------------------------------------
+
+\begin{frame}
+
+\begin{block}{Functions - describe how we can derive child RDD from parent RDD}
+ Functions stores the ``transformation'' between the parent RDD and the child RDD. 
+\end{block}
+
+\begin{block}{Dependencies - the information about the partitions}
+ Dependencies describe the dependency relations between partitions in child RDD and the partitions in parent RDD. In general, depending on the operations the dependencies could be in ``narrow dependency'' or ``wide dependency''.
+\end{block}
+
+\end{frame}
+
+% -------------------------------------------------------------
+
+\begin{frame}
+
+\begin{block}{What is ``Lazy Evaluation'' for RDD?}
+ Lazy evaluation is an idea very common in functional programming. It means for an expression, it will be computed when it is really needed (for example, to cache it(save the RDD to the local memory), save the RDD to file on disk, or derive results from the RDD). 
+\end{block}
+
+\begin{block}{How the ``Lazy Evaluation'' works in RDD?}
+For transformation operations, a child RDD is only generated the ``functions'' and the ``dependencies'' so that we know how to compute a child RDD from parent RDD. 
+The data slice like partition and metadata is actually not computed until there's 
+action operation is needed. In this way, the creation of RDD can be both memory and  CPU efficient.
+\end{block}
+
+
+\end{frame}
+
+% -------------------------------------------------------------
+
+\begin{frame}
+
+\begin{block}{narrow dependency}
+ If each of the partitions of an RDDs are created from only one partition of a single RDD, then it is a narrow dependency. 
+\end{block}
+
+\begin{block}{wide dependency}
+ If a partition in a RDD is created from more than one partition(from same or different RDD), then it is a wide dependency.
+\end{block}
+
+the narrow dependency is always good for RDD transformation. Because all of operations can be performed ``locally''. However, wide dependency may not be good, since the parent partitions the child RDD depending on may stored in a different node. This situation will make the Spark slow in efficiency. 
+
+\end{frame}
+
+% -------------------------------------------------------------
+
+\begin{frame}
+
+\begin{alertblock}{ partition is also the index of parallelism}
+ Spark can only run 1 concurrent task for every partition of an RDD, up to the number of cores in your cluster. 
+\end{alertblock}
+
+From this feature, we know two points regarding the Spark:
+\begin{itemize}
+ \item Spark operations are performed in batches, the unit is in partitions. 
+ \item locality is important for RDD operations. 
+\end{itemize}
+A similar example to understand the locality in RDD is the ``false sharing'' in the Multi-threading.
+
+\end{frame}
+
+% -------------------------------------------------------------
+
+\begin{frame}
+
+Two type of partitions in RDD:
 \begin{block}{\textbf{Hash type partition}}
  There are two types of partitions in RDD, one is the ``Hash'' type of partition:
  \begin{displaymath}
@@ -401,47 +515,118 @@ For example, if a data file is about 300MB, then there will be two RDD in 128MB 
  \end{displaymath}
 \end{block}
 
-One important question is: whether the data structure is ``hash map''(allow unsynchronized of data) or ``hash table''(synchronized of data
-must be performed)? I guess the Hashed partitions in Spark is more like the ``ConcurrentHashMap'' in Java.  
- 
-\end{frame}
-
-
-\begin{frame}[fragile]
-  %  \frametitle{How can we improve the diagnosis}
-
-  A simple case that the hash partion is created:
-  \begin{verbatim}
-  var rdd = sc.textFile (“file.txt”)   
-  \end{verbatim}
-  In this example 
-
-\end{frame}
-
-\begin{frame}
-
   \begin{block}{\textbf{range type partition}}
  \begin{displaymath}
   \text{(1,value1)}  \quad \text{(2,value2)} \quad \text{(3,value3)}  \quad \cdots
  \end{displaymath}
 \end{block}
-
-  
+ 
 \end{frame}
 
-\subsection{RDD Features}
+% -------------------------------------------------------------
+\subsection{Example for Creating RDD}
+\begin{frame}[fragile]
+  %  \frametitle{How can we improve the diagnosis}
+
+  A simple case that the hash partition is created (rademe.txt):
+  \begin{verbatim}
+Spark is a fast and general cluster computing system for Big Data. It provides
+high-level APIs in Scala, Java, Python, and R, and an optimized engine that
+supports general computation graphs for data analysis. It also supports a
+rich set of higher-level tools including Spark SQL for SQL and DataFrames,
+MLlib for machine learning, GraphX for graph processing,
+and Spark Streaming for stream processing.
+  \end{verbatim}
+
+\end{frame}
+
+% -------------------------------------------------------------
+
+\begin{frame}[fragile]
+  %  \frametitle{How can we improve the diagnosis}
+
+  based on this paragraph we can create a RDD in the Spark-Shell:
+  \begin{verbatim}
+  scala> val rdd = sc.textFile (“readme.txt”)   
+  scala> rdd.partitions.length
+res2: Int = 2
+scala> rdd.foreachPartition( i => println("each partition content : " + i.toList))
+each partition content : List(, Spark is a fast and general cluster computing 
+system for Big Data. It provides, high-level APIs in Scala, Java, Python, 
+and R, and an optimized engine that, supports general computation graphs 
+for data analysis. It also supports a)
+each partition content : List(rich set of higher-level tools including 
+Spark SQL for SQL and DataFrames, , MLlib for machine learning, GraphX 
+for graph processing,, and Spark Streaming for stream processing., )
+  \end{verbatim}
+So there are two partitions created in this RDD, 
+and the whole text is divided into two
+segments, and each partition has one segment.
+
+\end{frame}
+
+% -------------------------------------------------------------
+
+\begin{frame}[fragile]
+
+In the above example we convert the data in partition to List, one of the built-in data
+structure in Scala, however we can also print it into vector or set etc.:
+\begin{verbatim}
+scala> rdd.foreachPartition(i => println("partition content " + i.toSet))
+partition content Set(higher-level tools including Spark SQL for SQL and DataFrames,, 
+MLlib for machine learning, GraphX for graph processing,, and Spark Streaming for 
+stream processing., )
+partition content Set(, It provides high-level APIs in Scala, Java, Python, and R, , 
+and an optimized engine that supports general computation , graphs for data analysis. 
+It also supports a rich set of , Spark is a fast and general cluster computing 
+system for Big Data. )
+\end{verbatim}
+\end{frame}
+
+
+% -------------------------------------------------------------
+
+\begin{frame}[fragile]
+
+another example for RDD:
+\begin{verbatim}
+ scala> val rdd1 = sc.parallelize(1 to 10, 3)
+rdd1: org.apache.spark.rdd.RDD[Int] = ParallelCollectionRDD[7] 
+at parallelize at <console>:24
+
+scala> rdd1.foreachPartition(i => println("partition content " + i.toList))
+partition content List(4, 5, 6)
+partition content List(7, 8, 9, 10)
+partition content List(1, 2, 3)
+\end{verbatim}
+
+\end{frame}
+
+
+% -------------------------------------------------------------
+
+\subsection{Flowchart for Big Data Analysis}
 \begin{frame}
  %   \frametitle{How can we improve the diagnosis}
 
-\begin{itemize}
- \item in memory;
- \item parallel;
- \item resilient (fault-tolerant);
- \item partitioned and distributed;
- \item Lazy evaluated;
-\end{itemize} 
-  
+ \begin{figure}
+ \includegraphics[scale=0.3]{rdd2}
+\caption{general view for using Spark in big data analysis}
+\end{figure} 
+
 \end{frame}
+
+
+% -------------------------------------------------------------
+
+\subsection{Transformation Operations on RDD}
+\begin{frame}
+
+
+
+
+\end{frame}
+
 
 \end{document}
 
