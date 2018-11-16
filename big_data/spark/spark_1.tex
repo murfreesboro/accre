@@ -377,7 +377,6 @@ Because it is more than a collection of library:
 
 % -------------------------------------------------------------
 
-\section{Resilient Distributed Dataset}
 \begin{frame}
 
 \begin{figure}
@@ -620,13 +619,66 @@ partition content List(1, 2, 3)
 % -------------------------------------------------------------
 
 \subsection{Transformation Operations on RDD}
-\begin{frame}
+\begin{frame}[fragile]
 
+Transformation operations are transforming the RDD into a new RDD. The transformation operations take function as input.
+As what we have stated previously, the narrow dependency is the most simplest and efficient operations. Hence let's start
+with the narrow transformation operations first.
 
-
+\begin{block}{map - transforming each element of RDD into a new one (one to one)}
+\begin{verbatim}
+scala> val a = sc.parallelize(List("dog", "tiger", "lion", "cat", " eagle"), 2)
+scala> val b = a.map(x => (x.length, x))  
+\end{verbatim}
+\end{block}
+In this case the passed in list of strings are partitioned into 2 RDDs. For each string in the RDD, through the map operation
+each string becomes a tuple (string\_length, string\_content).
 
 \end{frame}
 
+% -------------------------------------------------------------
+
+\begin{frame}[fragile]
+
+\begin{block}{flatMap - transforming each element in RDD into a new set (one to many)}
+\begin{verbatim}
+scala> val rdd1 = rdd.flatMap(line => line.split(" "))  
+\end{verbatim}
+\end{block}
+In this case the text file inside the rdd is splited into many words by the space, returning to the rdd1. 
+
+\begin{block}{filter - filtering out the elements in RDD depending on some conditions (many to one)}
+\begin{verbatim}
+scala> val rdd1 = rdd.filter(line => line.split(" ")).filter(line => line == "test")  
+\end{verbatim}
+\end{block}
+In this case the result rdd1 only contains the string of ``test''.
+
+\end{frame}
+
+
+% -------------------------------------------------------------
+
+\begin{frame}[fragile]
+
+In the above examples, they are all narrow dependency operations - safe, efficient and simple (like embarrassing parallel). 
+Now the more difficult model is the wide dependency operations.
+
+\begin{block}{groupByKey - groups all values with respect to a single key}
+\begin{verbatim}
+scala> val wordFrequencies = a.flatMap(line.split(" ").map(word => (word, 1)).groupByKey().map((x,y) => (x,sum(y)))
+\end{verbatim}
+\end{block}
+This line calculates teh word frequencies in the given text file.
+
+\begin{block}{reducebyKey - filtering out the elements in RDD depending on some conditions}
+\begin{verbatim}
+scala> val wordFrequencies = a.flatMap(line.split(" ").map(word => (word, 1)).reduceByKey(()).map((x,y) => (x,sum(y)))
+\end{verbatim}
+\end{block}
+In this case the result rdd1 only contains the string of ``test''.
+
+\end{frame}
 
 \end{document}
 
