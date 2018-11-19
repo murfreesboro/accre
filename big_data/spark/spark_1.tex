@@ -246,13 +246,14 @@
 \begin{frame}
 %    \frametitle{}
 
-For the second question, it can be divided into more specific questions:
+More specifically, I have the following questions while learning the big data analysis:
 
 \begin{description}
  \item [Data]
  \begin{itemize}
   \item What kind of level of data is ``big data'' and can be benefit from big data analysis?
   \item Does big data analysis can be applied for all formats of data?
+  \item What kind of ``data'' projects can be benefit from the big data analysis?
  \end{itemize}
   \item [Tools]
  \begin{itemize}
@@ -275,13 +276,11 @@ For the second question, it can be divided into more specific questions:
 %    \frametitle{}
 
 Upon Will's suggestion, I started the big data analysis journey by beginning from Spark and Scala/Python.
-So in the following slices I will concentrate on the learning of Spark/Scala for the big data analysis.
-
-Aspects to be covered in this talk and following talks: 
-\begin{itemize}
- \item How can we understand Spark/Scala conceptually? Features comparing with C++/OpenMP/MPI etc.?
- \item How to use them for practical projects? From local jobs until to jobs on the cluster.
-\end{itemize}
+For this report, my talk will be mainly concentrating on this point:
+\begin{alertblock}
+ How can we understand Spark/Scala conceptually? What is the similarities and differences comparing with 
+ C++/OpenMP/MPI etc.?
+\end{alertblock}
 
 
 \end{frame}
@@ -304,13 +303,15 @@ Because it is more than a collection of library:
  machine learning etc.
 \end{description}
 
+One interesting comparison: Spark VS. STL.
+
 \end{frame}
 % -------------------------------------------------------------
 
 \begin{frame}
 
 
-    \begin{block}{How to think about the library VS. REPL for Spark?}
+    \begin{block}{How to think about the REPL for Spark?}
     REPL is a good feature for fast development and testing/debugging purpose
     (for example, C++/Java do not have it). It is also 
     good for teaching purpose, too. However, as the code growing and the project 
@@ -362,7 +363,8 @@ Because it is more than a collection of library:
 \begin{frame}
 
  \begin{block}{What is RDD?}
-  RDD is simply a collection of readable data records stored in ``MEMORY''(also it can be stored in disk, too). It supports both structured data and unstructured data. 
+  RDD is simply a collection of readable data records stored in ``MEMORY''(also it can be stored in disk, too). 
+  It supports both structured data and unstructured data. 
  \end{block}
  
  \begin{block}{in-memory}
@@ -380,7 +382,7 @@ Because it is more than a collection of library:
 \begin{frame}
 
 \begin{figure}
- \includegraphics[scale=0.4]{rdd1}
+ \includegraphics[scale=0.3]{rdd1}
 \caption{A simple example demonstrate the relation between RDD and HDFS}
 \end{figure} 
 
@@ -417,7 +419,6 @@ An RDD is mainly made up of 4 parts:
  can rebuild the whole dataset from the partitions.
 \end{block}
 
-
 \end{frame}
 
 % -------------------------------------------------------------
@@ -433,7 +434,8 @@ form the children RDD from the parent RDD)
 \end{itemize}
 
 \begin{alertblock}{data flow is immutable}
- For big data analysis with Spark, the data flow is immutable. Therefore for the data flow we transform it from one type RDD to anther type of RDD. 
+ For big data analysis with Spark, the data flow is immutable. Therefore for the data flow we 
+ transform it from one type RDD to anther type of RDD. 
 \end{alertblock}
 
 \end{frame}
@@ -447,7 +449,8 @@ form the children RDD from the parent RDD)
 \end{block}
 
 \begin{block}{Dependencies - the information about the partitions}
- Dependencies describe the dependency relations between partitions in child RDD and the partitions in parent RDD. In general, depending on the operations the dependencies could be in ``narrow dependency'' or ``wide dependency''.
+ Dependencies describe the dependency relations between partitions in child RDD and the partitions in parent RDD. 
+ In general, depending on the operations the dependencies could be in ``narrow dependency'' or ``wide dependency''.
 \end{block}
 
 \end{frame}
@@ -457,11 +460,14 @@ form the children RDD from the parent RDD)
 \begin{frame}
 
 \begin{block}{What is ``Lazy Evaluation'' for RDD?}
- Lazy evaluation is an idea very common in functional programming. It means for an expression, it will be computed when it is really needed (for example, to cache it(save the RDD to the local memory), save the RDD to file on disk, or derive results from the RDD). 
+ Lazy evaluation is an idea very common in functional programming. It means for an expression, i
+ t will be computed when it is really needed (for example, to cache it(save the RDD to the local memory), 
+ save the RDD to file on disk, or derive results from the RDD). 
 \end{block}
 
 \begin{block}{How the ``Lazy Evaluation'' works in RDD?}
-For transformation operations, a child RDD is only generated the ``functions'' and the ``dependencies'' so that we know how to compute a child RDD from parent RDD. 
+For transformation operations, a child RDD is only generated the ``functions'' and the ``dependencies'' 
+so that we know how to compute a child RDD from parent RDD. 
 The data slice like partition and metadata is actually not computed until there's 
 action operation is needed. In this way, the creation of RDD can be both memory and  CPU efficient.
 \end{block}
@@ -481,7 +487,9 @@ action operation is needed. In this way, the creation of RDD can be both memory 
  If a partition in a RDD is created from more than one partition(from same or different RDD), then it is a wide dependency.
 \end{block}
 
-the narrow dependency is always good for RDD transformation. Because all of operations can be performed ``locally''. However, wide dependency may not be good, since the parent partitions the child RDD depending on may stored in a different node. This situation will make the Spark slow in efficiency. 
+the narrow dependency is always good for RDD transformation. Because all of operations can be performed ``locally''. 
+However, wide dependency may not be good, since the parent partitions the child RDD depending on may stored in 
+a different node. This situation will make the Spark slow in efficiency. 
 
 \end{frame}
 
@@ -666,17 +674,87 @@ Now the more difficult model is the wide dependency operations.
 
 \begin{block}{groupByKey - groups all values with respect to a single key}
 \begin{verbatim}
-scala> val wordFrequencies = a.flatMap(line.split(" ").map(word => (word, 1)).groupByKey().map((x,y) => (x,sum(y)))
+scala> val wordFrequencies = x.flatMap(line.split(" ").map(word => (word, 1)).
+groupByKey().map((x,y) => (x,sum(y)))
 \end{verbatim}
 \end{block}
-This line calculates teh word frequencies in the given text file.
 
-\begin{block}{reducebyKey - filtering out the elements in RDD depending on some conditions}
+
+\begin{block}{reducebyKey - counting all of values with respect to a single key}
 \begin{verbatim}
-scala> val wordFrequencies = a.flatMap(line.split(" ").map(word => (word, 1)).reduceByKey(()).map((x,y) => (x,sum(y)))
+scala> val wordFrequencies = x.flatMap(line.split(" ").map(word => (word, 1)).
+reduceByKey(()).map((x,y) => (x,sum(y)))
 \end{verbatim}
 \end{block}
-In this case the result rdd1 only contains the string of ``test''.
+Both of the two examples calculates the word frequencies in the given text file.
+
+\end{frame}
+
+% -------------------------------------------------------------
+\subsection{Action Operations on RDD}
+\begin{frame}[fragile]
+
+\begin{block}{action operations:}
+  Operations on the RDD objects so that to return a non-RDD result. This will cause all of 
+  previous lazy evaluated operations put on ``action'' so especially consumes a lot of resource to finish.
+\end{block}
+
+\begin{block}{collect - return all the elements of the dataset as an array}
+The API of collect function is very simple - it does not need any parameters. However, the action taken by ``collect'' is very 
+complicated, it will send all of result RDDs to the master node and transform them into an array. As we all know from HPC, this step
+can cause trouble in terms of network and available resources in the cluster.
+\end{block}
+
+
+\begin{block}{reduce - performing operation on all of RDD elements and return a value}
+\begin{verbatim}
+scala> val x = sc.parallelize(1 to 10, 2)
+scala> val y = x.reduce((accum,n) => (accum + n)) 
+\end{verbatim}
+\end{block}
+
+\end{frame}
+
+% -------------------------------------------------------------
+\subsection{Further Thoughts for Spark on Cluster}
+\begin{frame}[fragile]
+
+\begin{block}{comparison between applications of Spark and HPC}
+ \begin{itemize}
+ \item Spark API are all highly abstracted interface, however to properly use them could be a problem;
+ \item In applying Spark for big data analysis the troubles usually very similar with HPC programming.
+ \item A different case is memory/network overflow occurs more frequently in Spark.
+\end{itemize}
+\end{block}
+
+A simple case:
+\begin{verbatim}
+var counter = 0
+var rdd = sc.parallelize(data)
+
+// Wrong: Don't do this!!
+rdd.foreach(x => counter += x)
+
+println("Counter value: " + counter)
+\end{verbatim}
+
+\begin{block}{Why this code piece fails?}
+Because counter is only in mater node but not in the worker node! Simiarly to the MPI.
+\end{block}
+
+\end{frame}
+
+% -------------------------------------------------------------
+\subsection{Future Plan}
+\begin{frame}
+
+
+ \begin{itemize}
+ \item Currently I set up a general understanding on the structure of Spark (begin to read the code!); 
+ \item Second step, is to plunge into world of Scala to understand more about functional programming (next talk topic, probably on Jan. 3rd);
+ \item Thirdly step, return to Spark focusing on the more details than the concepts(the following one/two talks topic);
+ \item Final step, for practical projects/teaching (approximately on next March).
+\end{itemize}
 
 \end{frame}
 
