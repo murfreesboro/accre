@@ -205,7 +205,7 @@
 % ---------------------------------------------------------------------
 
 %% preamble
-\title[Big Data Analysis In ACCRE]{Big Data Analysis In ACCRE}
+\title[Big Data Analysis In ACCRE]{Big Data Analysis in ACCRE}
 \subtitle{Report on Learning Big Data Analysis: I}
 \author{Fenglai Liu}
 \institute[ACCRE]{fenglai@accre.vanderbilt.edu}
@@ -234,7 +234,7 @@
 
  As a software developer the following points on the big data analysis interest me:
 \begin{itemize}
- \item How to understand big data analysis from a traditional HPC programming view?
+ \item What is the best way to understand big data analysis? 
  \item How to understand the difference and similarity between the big data analysis and 
  traditional HPC programming project?
 \end{itemize}
@@ -277,7 +277,7 @@ More specifically, I have the following questions while learning the big data an
 
 Upon Will's suggestion, I started the big data analysis journey by beginning from Spark and Scala/Python.
 For this report, my talk will be mainly concentrating on this point:
-\begin{alertblock}
+\begin{alertblock}{}
  How can we understand Spark/Scala conceptually? What is the similarities and differences comparing with 
  C++/OpenMP/MPI etc.?
 \end{alertblock}
@@ -297,8 +297,8 @@ Because it is more than a collection of library:
 \begin{description}
  \item [library] Spark can be used a a library for Scala/Python/Java programming languages.
  \item [REPL] Refers to Read-Evaluate-Print-Loop. Spark itself has an inner shell environment, 
- where the user can run the spark API in Scala interactively (key feature for fast development). 
- PySpark also has REPL function based on Python. 
+ where the user can run the spark API in Scala interactively. PySpark also has REPL function 
+ based on Python. 
  \item [flexible extension] further API can be provided through Spark streaming like
  machine learning etc.
 \end{description}
@@ -328,7 +328,8 @@ One interesting comparison: Spark VS. STL.
 \end{frame}
 % -------------------------------------------------------------
 
-\section{SparkContext}
+\section{Spark}
+\subsection{SparkContext}
 \begin{frame}[fragile]
   
 
@@ -358,7 +359,6 @@ One interesting comparison: Spark VS. STL.
 
 % -------------------------------------------------------------
 
-\section{Resilient Distributed Dataset}
 \subsection{What is RDD?}
 \begin{frame}
 
@@ -743,6 +743,46 @@ Because counter is only in mater node but not in the worker node! Simiarly to th
 \end{block}
 
 \end{frame}
+
+% -------------------------------------------------------------
+\subsection{Subjects for Future Talk}
+\begin{frame}
+
+\begin{block}{cluster related topics:}
+ \begin{itemize}
+ \item Spark job distribution and submission in SparkContext;
+ \item Spark partitions shuffle;
+ \item Spark DAG (Directed Acyclic Graph);
+ \item Spark caching; 
+\end{itemize}
+\end{block}
+
+\begin{block}{Scala related topics:}
+  \begin{itemize}
+  \item Spark lineage (due to lazy evaluation);
+  \item Data structures (list, set etc.) in Scala used for Spark;
+  \item How to use functional programming in Spark?
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+% -------------------------------------------------------------
+
+\begin{frame}
+
+
+\begin{block}{Spark features:}
+ \begin{itemize}
+  \item Spark dataframe;
+  \item Spark streaming;
+  \item Spark MLlib and Spark SQL etc.
+ \end{itemize}
+
+\end{block}
+
+\end{frame}
+
 
 % -------------------------------------------------------------
 \subsection{Future Plan}
