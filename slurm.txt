@@ -31,6 +31,15 @@ Tipically when jobs die like that it is for two reasons that I have encountered:
 these suggestions are from Davide.
 
 
+#########################
+# options with sbatch
+#########################
+the line #SBATCH --constraint=sandybridge,haswell,skylake works for the slurm, it means the compute nodes could be either of the
+choice listed. The line #SBATCH --constraint=[sandybridge,haswell,skylake] means the job will pick up one type of compute node 
+for the job,  so all the allocated nodes belonging to the same architecture. We can also replace the "," as "|", like 
+#SBATCH --constraint=[sandybridge|haswell|skylake].
+
+
 
 
 
