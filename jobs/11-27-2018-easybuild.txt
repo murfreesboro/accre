@@ -1,0 +1,25 @@
+
+
+*****************************************
+* 11/26  list generated
+*****************************************
+ABySS
+AFNI
+ANTs
+Armadillo
+arpack-ng
+AUGUSTUS
+BamTools
+BEDTools
+Bowtie2
+charmm
+
+
+*****************************************
+* 11/27
+*****************************************
+Armadillo
+
+1) install arpack-ng - set up a branch and push it, pass on easybox
+
+2) Armadillo
