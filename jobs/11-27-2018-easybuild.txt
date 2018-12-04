@@ -6,14 +6,17 @@
 ABySS
 AFNI
 ANTs
-Armadillo
-arpack-ng
 AUGUSTUS
 BamTools
 BEDTools
-Bowtie2
 charmm
 
+------
+software done with ACCRE:
+
+Armadillo
+arpack-ng
+Bowtie2
 
 *****************************************
 * 11/27
@@ -22,4 +25,30 @@ Armadillo
 
 1) install arpack-ng - set up a branch and push it, pass on easybox
 
-2) Armadillo
+2) Armadillo on EB repo
+
+*****************************************
+* 11/28
+*****************************************
+
+1) Armadillo for ACCRE repo finished
+
+2) bowtie2 on official repo
+
+*****************************************
+* 11/29
+*****************************************
+
+revising the openjpeg and bowtie2 on offical repo
+
+add in Bamtools to the EB repo;
+
+*****************************************
+* 12/3
+*****************************************
+
+add in sparsehash to easybox;
+
+updated Bowtie2 to the cluster
+
+

@@ -226,17 +226,62 @@
 \begin{frame}
 %    \frametitle{}
 
+\begin{block}{Imperative Programming(IP)}
+Program is built from one or more procedures. Like Fortran/C/C++ etc.
+\end{block}
+
+\begin{block}{Functional Programming(FP)}
+Program concentrates on the mapping/transformation between the data fields.  
+\end{block}
+
+In general, FP is in more abstract level than the IP.
+
 \end{frame}
 
 % -------------------------------------------------------------
 \begin{frame}
 %    \frametitle{}
 
+A typical conceptual example:
+\begin{equation}
+ g(\omega) = \int_{-\infty}^{+\infty} f(x)\cos(\omega x) dx
+\end{equation}
+
+\begin{itemize}
+ \item For IP point of view, we think for a given function $f(x)$ how we can do the integration and 
+ derive the result Fourier transformation $g(\omega)$;
+ \item For FP point of view, we think this is a natural mapping between a general function $f(x)$
+ and $g(x)$, and both of the two functions are in the real number fields $\Re$.
+\end{itemize}
+
 \end{frame}
 
 % -------------------------------------------------------------
-\begin{frame}
+\begin{frame}[fragile]
 %    \frametitle{}
+
+FP is a concept. You can use the typical procedure like language to express the FP:
+
+\begin{verbatim}
+int abs_sum (int a, int b) {
+  int sum = 0;
+  sum  = abs(a);
+  sum += abs(b);
+  return sum;
+}
+\end{verbatim}
+
+\begin{verbatim}
+int abs_sum (int a, int b) {
+  retrun abs(a) + abs(b);
+}
+\end{verbatim}
+
+In the above example, the first example concentrates on how we can derive sum based 
+on two input integers step by step. 
+
+In the second example, we consider the abs\_sum function as a transformation between 
+abs function based on the integer variables. 
 
 \end{frame}
 
