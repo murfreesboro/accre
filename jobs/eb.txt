@@ -7,7 +7,6 @@ ABySS
 AFNI
 ANTs
 AUGUSTUS
-BamTools
 BEDTools
 charmm
 
@@ -17,6 +16,7 @@ software done with ACCRE:
 Armadillo
 arpack-ng
 Bowtie2
+BamTools
 
 *****************************************
 * 11/27
@@ -50,5 +50,11 @@ add in Bamtools to the EB repo;
 add in sparsehash to easybox;
 
 updated Bowtie2 to the cluster
+
+*****************************************
+* 12/18
+*****************************************
+previously:
+
 
 
