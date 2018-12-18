@@ -260,7 +260,7 @@ A typical conceptual example:
 \begin{frame}[fragile]
 %    \frametitle{}
 
-FP is a concept. You can use the typical procedure like language to express the FP:
+FP is a concept. You can use the C to express the FP:
 
 \begin{verbatim}
 int abs_sum (int a, int b) {
@@ -283,12 +283,32 @@ on two input integers step by step.
 In the second example, we consider the abs\_sum function as a transformation between 
 abs function based on the integer variables. 
 
+\begin{block}{key features of IP and FP}
+ \begin{description}
+ \item [IP] instructions
+ \item [FP] transformations
+\end{description}
+\end{block}
+
+
+
 \end{frame}
 
 % -------------------------------------------------------------
 \subsection{Why use FP for big data analysis?}
 \begin{frame}
 %    \frametitle{}
+
+ Comparing with Imperative Programming(IP), FP has it's own advantages in programming:
+ \begin{itemize}
+ \item FP concentrates on the data fields. The focus on FP is how to do transformations on the given data fields, which 
+ makes it perfect design for handle data analysis.
+ \item Better design for parallel. In FP the variable should be immutable (for example, in pure FP language like Haskell).
+ Therefore the parallel design problems(false sharing, racing condition etc.) in IP language like C/Fortran/C++ etc. do not 
+ exist. 
+ \item More abstraction for code. Because the FP concentrates on more abstract level than IP, usually the code is shorter;
+ which makes FP a good candidate for fast development choice.
+ \end{itemize} 
 
 \end{frame}
 
