@@ -1,5 +1,4 @@
 
-
 *****************************************
 * 11/26  list generated
 *****************************************
@@ -17,6 +16,7 @@ Armadillo
 arpack-ng
 Bowtie2
 BamTools
+scikit.learn
 
 *****************************************
 * 11/27
@@ -54,7 +54,13 @@ updated Bowtie2 to the cluster
 *****************************************
 * 12/18
 *****************************************
-previously:
+installed software:
 
+scikit.learn;
+sparsehash;
+Bamtools;
+openjpeg;
+
+going to deal with dcm2niix
 
 
