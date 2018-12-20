@@ -205,8 +205,8 @@
 % ---------------------------------------------------------------------
 
 %% preamble
-\title[Big Data Analysis In ACCRE]{Big Data Analysis in ACCRE}
-\subtitle{Introduction to Scala}
+\title[Halo Parent Finder]{HaloParentFinder}
+\subtitle{Big Data Project Transformation}
 \author{Fenglai Liu}
 \institute[ACCRE]{fenglai@accre.vanderbilt.edu}
 
@@ -221,75 +221,46 @@
 
 % -------------------------------------------------------------
 
-\section{Introduction}
-\subsection{What is functional programming(FP)?}
+\section{HaloParentFinder}
+\subsection{Components}
 \begin{frame}
 %    \frametitle{}
-
-\begin{block}{Imperative Programming(IP)}
-Program is built from one or more procedures. Like Fortran/C/C++ etc.
-\end{block}
-
-\begin{block}{Functional Programming(FP)}
-Program concentrates on the mapping/transformation between the data fields.  
-\end{block}
-
-In general, FP is in more abstract level than the IP.
-
-\end{frame}
-
-% -------------------------------------------------------------
-\begin{frame}
-%    \frametitle{}
-
-A typical conceptual example:
-\begin{equation}
- g(\omega) = \int_{-\infty}^{+\infty} f(x)\cos(\omega x) dx
-\end{equation}
 
 \begin{itemize}
- \item For IP point of view, we think for a given function $f(x)$ how we can do the integration and 
- derive the result Fourier transformation $g(\omega)$;
- \item For FP point of view, we think this is a natural mapping between a general function $f(x)$
- and $g(x)$, and both of the two functions are in the real number fields $\Re$.
+ \item parameters reading;
 \end{itemize}
+
 
 \end{frame}
 
 % -------------------------------------------------------------
-\begin{frame}[fragile]
+\subsection{Parameters Reading}
+\begin{frame}
 %    \frametitle{}
 
-FP is a concept. You can use the C to express the FP:
+The codes for reading the parameters are in the read\_param.c and read\_param.h. The parameters defines
+the location of the groups data(input), and output files directory; the limits of snapshots 
+and other debugging options.
 
-\begin{verbatim}
-int abs_sum (int a, int b) {
-  int sum = 0;
-  sum  = abs(a);
-  sum += abs(b);
-  return sum;
-}
-\end{verbatim}
+This part of code is rather standalone, only depending on util part.
 
-\begin{verbatim}
-int abs_sum (int a, int b) {
-  retrun abs(a) + abs(b);
-}
-\end{verbatim}
+\end{frame}
 
-In the above example, the first example concentrates on how we can derive sum based 
-on two input integers step by step. 
+% -------------------------------------------------------------
+\subsection{Halo Groups}
+\begin{frame}
+%    \frametitle{}
 
-In the second example, we consider the abs\_sum function as a transformation between 
-abs function based on the integer variables. 
+``group'' is the central idea for this program - it is also the key data structure for extending to big data analysis.
+The structure of group is defined in io.h.
 
-\begin{block}{key features of IP and FP}
- \begin{description}
- \item [IP] instructions
- \item [FP] transformations
-\end{description}
-\end{block}
+Groups is organized by particles. As you can see in the struct of group\_data, the pointers like x, y, z, vx, vy, vz etc.
+are all allocated based on the number of particles.
 
+In the code the group\_data pointer is an array of groups. The group data is initialized in the loadgroups.c. The loadgroups
+function will read in all of the 
+
+How large is the group?
 
 
 \end{frame}
