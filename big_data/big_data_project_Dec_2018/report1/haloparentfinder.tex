@@ -205,7 +205,7 @@
 % ---------------------------------------------------------------------
 
 %% preamble
-\title[Halo Parent Finder]{HaloParentFinder}
+\title[Halo Parent Finder]{HaloParFinder}
 \subtitle{Big Data Project Transformation}
 \author{Fenglai Liu}
 \institute[ACCRE]{fenglai@accre.vanderbilt.edu}
@@ -226,8 +226,25 @@
 \begin{frame}
 %    \frametitle{}
 
+\begin{description}
+ \item [ Parameters Reading] global parameters are defined by struct params\_data in read\_param.h, the loading of parameters is in read\_param.c.
+ \item [Group Data]  
+\end{description}
+
+
+\end{frame}
+
+% -------------------------------------------------------------
+
+\subsection{General Procedure}
+\begin{frame}
+%    \frametitle{}
+
 \begin{itemize}
- \item parameters reading;
+ \item load in parameters; the global parameters are stored in a global struct PARAMS;
+ \item calculate the number of one groups - group0. Here the number of groups is got from the input parameter file,
+ rather than the group data file itself. The first data in the input parameter file seems to be the number of groups0.
+ \item 
 \end{itemize}
 
 
