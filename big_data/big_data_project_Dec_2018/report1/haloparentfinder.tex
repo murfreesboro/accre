@@ -205,7 +205,7 @@
 % ---------------------------------------------------------------------
 
 %% preamble
-\title[Halo Parent Finder]{HaloParFinder}
+\title[Halo Parent Finder]{HaloParentFinder}
 \subtitle{Big Data Project Transformation}
 \author{Fenglai Liu}
 \institute[ACCRE]{fenglai@accre.vanderbilt.edu}
@@ -220,46 +220,16 @@
 \end{frame}
 
 % -------------------------------------------------------------
+\section{Components}
 
-\section{HaloParentFinder}
-\subsection{Components}
-\begin{frame}
-%    \frametitle{}
-
-\begin{description}
- \item [ Parameters Reading] global parameters are defined by struct params\_data in read\_param.h, the loading of parameters is in read\_param.c.
- \item [Group Data]  
-\end{description}
-
-
-\end{frame}
-
-% -------------------------------------------------------------
-
-\subsection{General Procedure}
-\begin{frame}
-%    \frametitle{}
-
-\begin{itemize}
- \item load in parameters; the global parameters are stored in a global struct PARAMS;
- \item calculate the number of one groups - group0. Here the number of groups is got from the input parameter file,
- rather than the group data file itself. The first data in the input parameter file seems to be the number of groups0.
- \item 
-\end{itemize}
-
-
-\end{frame}
-
-% -------------------------------------------------------------
 \subsection{Parameters Reading}
 \begin{frame}
 %    \frametitle{}
 
 The codes for reading the parameters are in the read\_param.c and read\_param.h. The parameters defines
 the location of the groups data(input), and output files directory; the limits of snapshots 
-and other debugging options.
-
-This part of code is rather standalone, only depending on util part.
+and other debugging options (one data file is a snapshot). The developer use a global variable PARAMS to store 
+the parameters information. 
 
 \end{frame}
 
@@ -268,35 +238,100 @@ This part of code is rather standalone, only depending on util part.
 \begin{frame}
 %    \frametitle{}
 
-``group'' is the central idea for this program - it is also the key data structure for extending to big data analysis.
-The structure of group is defined in io.h.
+``group'' is the central idea for this program - the structure of group is defined in io.h. Group is a collection of particles(Halo). One data file (snapshot)
+may containing may groups.
 
-Groups is organized by particles. As you can see in the struct of group\_data, the pointers like x, y, z, vx, vy, vz etc.
-are all allocated based on the number of particles.
+\begin{block}{reading in the group data}
+ \begin{itemize}
+  \item first line is the the number of groups data;
+  \item the following line is the N particles and the halo ID;
+  \item after the lines are the particles data, like  x, y, z, vx, vy, vz etc. are all allocated based on the number of particles.
+ \end{itemize}
+\end{block}
 
-In the code the group\_data pointer is an array of groups. The group data is initialized in the loadgroups.c. The loadgroups
-function will read in all of the 
 
-How large is the group?
+In the code the group\_data pointer is an array of groups. The group data is initialized in the  the loadgroups
+function.
 
 
 \end{frame}
 
 % -------------------------------------------------------------
-\subsection{Why use FP for big data analysis?}
+\subsection{Functions}
+\begin{frame}[fragile]
+%    \frametitle{}
+
+\begin{block}{Find Hierarchy}
+ Finds the hierarchy level for each snapshot file (group0 and group1). 
+\end{block}
+
+
+\end{frame}
+
+% -------------------------------------------------------------
+\subsection{Functions}
+\begin{frame}[fragile]
+%    \frametitle{}
+
+\begin{block}{Find fof parents and find all parent}
+ \begin{verbatim}
+loop over group data in group0:
+     compare the ID from group1 with the group;
+     update this group data in group0;
+     update the corresponding group data in group1;
+end loop
+ \end{verbatim}
+\end{block}
+Both of the two functions contains similar structure like above. This will be the first key part for big data transformation
+and for optimization.
+\begin{itemize}
+\item  is there a chance to use a small data structure for the computation?
+\item  if for big data application, how to do it avoiding the communication penalty?
+\end{itemize}
+
+\end{frame}
+
+
+
+% -------------------------------------------------------------
+
+\subsection{General Procedure}
 \begin{frame}
 %    \frametitle{}
 
- Comparing with Imperative Programming(IP), FP has it's own advantages in programming:
- \begin{itemize}
- \item FP concentrates on the data fields. The focus on FP is how to do transformations on the given data fields, which 
- makes it perfect design for handle data analysis.
- \item Better design for parallel. In FP the variable should be immutable (for example, in pure FP language like Haskell).
- Therefore the parallel design problems(false sharing, racing condition etc.) in IP language like C/Fortran/C++ etc. do not 
- exist. 
- \item More abstraction for code. Because the FP concentrates on more abstract level than IP, usually the code is shorter;
- which makes FP a good candidate for fast development choice.
- \end{itemize} 
+\begin{itemize}
+ \item Load in parameters; the global parameters are stored in a global struct PARAMS;
+ \item Calculate the number of one groups - group0 and group1. Here the number of groups is got from the input parameter file,
+ rather than the group data file itself. The first data in the input parameter file seems to be the number of groups;
+ \item Allocate space for group0 and group1 and loading in the group data; 
+ \item Finds the hierarchy level (this is for a single snapshot);
+ \item Find fof parents;
+ \item Find all parents;
+ \item 
+\end{itemize}
+
+
+\end{frame}
+
+
+
+
+
+% -------------------------------------------------------------
+\section{Bad Design}
+\begin{frame}
+%    \frametitle{}
+
+\begin{block}{Rigid data structure} 
+group data array: the reading of NGroups is from a different place 
+ \end{block}
+
+
+ \begin{block}{Using the global variable} 
+  ``readshift'' array as an example:  used under macro ``SUSSING\_TREES''. In improving the program we need to consider
+  the matching between snapshot data and redshift data.
+ \end{block}
+
 
 \end{frame}
 
