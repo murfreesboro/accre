@@ -220,6 +220,26 @@
 \end{frame}
 
 % -------------------------------------------------------------
+
+\begin{frame}
+%    \frametitle{}
+
+This program is about 2500 lines of code (including comments). Here below are the general 
+procedure for the halo parent finding program:
+\begin{itemize}
+ \item Load in parameters. The global parameters are stored in a global struct PARAMS;
+ \item Calculate the number of groups - group0 and group1;
+ \item Allocate space for group0 and group1 and loading in the group data; 
+ \item Finds the hierarchy level (this is for a single snapshot);
+ \item Find fof parents for groups in group0 based on group1;
+ \item Find all parents for groups in group0 based on group1;
+ \item If the halo does not have parent, loop over the remaining snapshot data and repeat the previous steps.
+\end{itemize}
+
+
+\end{frame}
+
+% -------------------------------------------------------------
 \section{Components}
 
 \subsection{Parameters Reading}
@@ -257,6 +277,24 @@ function.
 \end{frame}
 
 % -------------------------------------------------------------
+\begin{frame}
+%    \frametitle{}
+
+\begin{block}{The drawback for the design of group data}
+  \begin{enumerate}
+   \item the design of the group data corresponding to the whole snapshot - not flexible to change. Each time for HaloParentFinder
+   we need to load in the all group data in the snapshot, this is the core reason why the memory usage got problem. 
+   \item allocate/free group data is cumbersome. Difficult to get the NGroups for the initialization.
+   \item parent finding process only use a small portion of group data - however currently we need to carry the whole data 
+   to do the process.
+   \item the definition of the data structure is hard to modify.
+   \item the coding style for the data structure is not clear for maintenance purpose.
+  \end{enumerate}
+\end{block}
+
+\end{frame}
+
+% -------------------------------------------------------------
 \subsection{Functions}
 \begin{frame}[fragile]
 %    \frametitle{}
@@ -264,12 +302,20 @@ function.
 \begin{block}{Find Hierarchy}
  Finds the hierarchy level for each snapshot file (group0 and group1). 
 \end{block}
+This part may not be a costive part since it only runs for a single snapshot. Another point is, this function probably
+is the only one uses the particle coordinates like $x$, $y$, $z$ and $xcen$, $ycen$ etc. in the group data.
+
+Therefore, it implies that we can divided the whole group data into two parts:
+\begin{itemize}
+ \item Part I is for parent finding in terms of group and particles;
+ \item Part II contains other data fields that not used for the parent finding. 
+\end{itemize}
+Such re-configuration can enhance the parent finding efficiency and memory usage.
 
 
 \end{frame}
 
 % -------------------------------------------------------------
-\subsection{Functions}
 \begin{frame}[fragile]
 %    \frametitle{}
 
@@ -283,42 +329,50 @@ end loop
  \end{verbatim}
 \end{block}
 Both of the two functions contains similar structure like above. This will be the first key part for big data transformation
-and for optimization.
-\begin{itemize}
-\item  is there a chance to use a small data structure for the computation?
-\item  if for big data application, how to do it avoiding the communication penalty?
-\end{itemize}
+and for optimization. Especially for big data application, this part need to be carefully designed to avoid the communication 
+penalty.
 
 \end{frame}
 
-
-
 % -------------------------------------------------------------
-
-\subsection{General Procedure}
-\begin{frame}
+\begin{frame}[fragile]
 %    \frametitle{}
 
-\begin{itemize}
- \item Load in parameters; the global parameters are stored in a global struct PARAMS;
- \item Calculate the number of one groups - group0 and group1. Here the number of groups is got from the input parameter file,
- rather than the group data file itself. The first data in the input parameter file seems to be the number of groups;
- \item Allocate space for group0 and group1 and loading in the group data; 
- \item Finds the hierarchy level (this is for a single snapshot);
- \item Find fof parents;
- \item Find all parents;
- \item 
-\end{itemize}
-
+\begin{block}{Find parents for remaining groups in group0}
+ \begin{verbatim}
+loop over remaining snapshot data files:
+     free the group1 data array;
+     initialize and load in the group1 data array;
+     find hierarchy for group1;
+     find fof parents and find all parent for group 
+     data in group0;
+end loop
+ \end{verbatim}
+\end{block}
+this step is to reuse the previous functions so that to searching the remaining unknown parent halos.
 
 \end{frame}
 
+% -------------------------------------------------------------
+\begin{frame}[fragile]
+%    \frametitle{}
 
+\begin{block}{Remaining functions: check\_fof\_matches and find\_progenitor}
+both of the two functions has similar structure with parents finding functions, they are only used
+for two adjacent snapshots.
+ \begin{verbatim}
+loop over group data in group1:
+     search for matching group data in group0;
+     update the group data in group1;
+     update the group data in group0;
+end loop
+ \end{verbatim}
+\end{block}
 
-
+\end{frame}
 
 % -------------------------------------------------------------
-\section{Bad Design}
+\section{Problems}
 \begin{frame}
 %    \frametitle{}
 
