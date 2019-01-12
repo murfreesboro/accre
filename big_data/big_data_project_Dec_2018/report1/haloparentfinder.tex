@@ -372,38 +372,78 @@ end loop
 \end{frame}
 
 % -------------------------------------------------------------
-\section{Problems}
+\section{Problems and Solutions}
 \begin{frame}
 %    \frametitle{}
 
-\begin{block}{Rigid data structure} 
-group data array: the reading of NGroups is from a different place 
+\begin{block}{Biggest problem - code is hard to understand, maintain and improved} 
+ \begin{itemize}
+  \item abuse use of macro - mixing the debug codes with the production codes;
+  \item rigid data structure - difficult for further improving;
+  \item bad data structure design - the whole parent searching process is difficult 
+  to maintain and change;
+  \item use of global variables - strong coupling in the program.
+ \end{itemize}
+\end{block}
+
+\begin{block}{Suggestion}
+ The code needs to be rewritten. In general we can modify the codes so that to solve the memory
+ problem, however in this way debugging cost is big. Rewriting may cost several weeks more but
+ the final code will be easier for maintaining.
+\end{block}
+
+ 
+\end{frame}
+
+% -------------------------------------------------------------
+\begin{frame}
+
+\begin{block}{Redesign the data structure}
+ \begin{itemize}
+  \item the normal group data for loading;
+  \item group data for parent finding process;
+ \end{itemize}
+ Therefore the HaloParentFinder program at least should be divided into two modules. One module
+ is to load the partial group data only for parent finding process
+\end{block}
+
+\end{frame}
+
+
+
+% -------------------------------------------------------------
+\subsection{Rigid Data Structure}
+\begin{frame}
+%    \frametitle{}
+
+\begin{block}{Why memory is not sufficient?} 
+The reason why memory is not sufficient is because the program needs to load in the whole snapshot data for computation. One computation needs two snapshots. For large enough snapshot like 150-200GB data this will cause the memory problem.
  \end{block}
-
-
- \begin{block}{Using the global variable} 
-  ``readshift'' array as an example:  used under macro ``SUSSING\_TREES''. In improving the program we need to consider
-  the matching between snapshot data and redshift data.
- \end{block}
-
+ 
+\begin{block}{Suggestions}
+\begin{itemize}
+ \item If the group data in a snapshot is independent with each other, we can cut the large snapshot into smaller snapshots. 
+ \item reorganize the code so that we can load in part of the snapshot data, rather than the 
+ whole data file.
+\end{itemize}
+\end{block}
 
 \end{frame}
 
 % -------------------------------------------------------------
 \begin{frame}
-      
+  
+  \begin{block}{Using the global variable} 
+  ``readshift'' array as an example:  used under macro ``SUSSING\_TREES''. In improving the program we need to consider
+  the matching between snapshot data and redshift data.
+ \end{block}
+  
 \end{frame}
 
 % -------------------------------------------------------------
 \subsection{Design of Scala}
 \begin{frame}
   
-\end{frame}
-
-% -------------------------------------------------------------
-\begin{frame}
-
-
 \end{frame}
 
 
