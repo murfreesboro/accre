@@ -224,8 +224,8 @@
 \begin{frame}
 %    \frametitle{}
 
-This program is about 2500 lines of code (including comments). Here below are the general 
-procedure for the halo parent finding program:
+This program is about 2500 lines of code (including comments). Generally this is the first program, there are other two programs
+following this one. All of the three forms the entire program set. Below are the general procedure for the halo parent finding program:
 \begin{itemize}
  \item Load in parameters. The global parameters are stored in a global struct PARAMS;
  \item Calculate the number of groups - group0 and group1;
@@ -233,7 +233,8 @@ procedure for the halo parent finding program:
  \item Finds the hierarchy level (this is for a single snapshot);
  \item Find fof parents for groups in group0 based on group1;
  \item Find all parents for groups in group0 based on group1;
- \item If the halo does not have parent, loop over the remaining snapshot data and repeat the previous steps.
+ \item If the halo does not have parent, loop over the remaining snapshot data and repeat the previous steps;
+ \item Perform additional checks to make sure the data is consistent.
 \end{itemize}
 
 
@@ -321,10 +322,13 @@ Such re-configuration can enhance the parent finding efficiency and memory usage
 
 \begin{block}{Find fof parents and find all parent}
  \begin{verbatim}
+form arrays to extract ID data from group 1;
 loop over group data in group0:
-     compare the ID from group1 with the group;
-     update this group data in group0;
-     update the corresponding group data in group1;
+     loop over group ID data in group 1:
+          compare the ID data between groups;
+          update this group data in group0;
+          update the corresponding group data in group1;
+     end loop
 end loop
  \end{verbatim}
 \end{block}
@@ -360,13 +364,6 @@ this step is to reuse the previous functions so that to searching the remaining 
 \begin{block}{Remaining functions: check\_fof\_matches and find\_progenitor}
 both of the two functions has similar structure with parents finding functions, they are only used
 for two adjacent snapshots.
- \begin{verbatim}
-loop over group data in group1:
-     search for matching group data in group0;
-     update the group data in group1;
-     update the group data in group0;
-end loop
- \end{verbatim}
 \end{block}
 
 \end{frame}
@@ -376,13 +373,12 @@ end loop
 \begin{frame}
 %    \frametitle{}
 
-\begin{block}{Biggest problem - code is hard to understand, maintain and improved} 
+\begin{block}{Code is hard to understand, maintain and improved} 
  \begin{itemize}
   \item abuse use of macro - mixing the debug codes with the production codes;
-  \item rigid data structure - difficult for further improving;
-  \item bad data structure design - the whole parent searching process is difficult 
-  to maintain and change;
-  \item use of global variables - strong coupling in the program.
+  \item rigid data structure - parent searching process is cubersome;
+  \item code structure is only for loading whole snapshot data - key reason for memory problem;
+  \item use of global variables - strong coupling between the functions in the program.
  \end{itemize}
 \end{block}
 
@@ -396,65 +392,177 @@ end loop
 \end{frame}
 
 % -------------------------------------------------------------
-\begin{frame}
+\subsection{Abuse Use of Macro}
+\begin{frame}[fragile]
+%    \frametitle{}
 
-\begin{block}{Redesign the data structure}
- \begin{itemize}
-  \item the normal group data for loading;
-  \item group data for parent finding process;
- \end{itemize}
- Therefore the HaloParentFinder program at least should be divided into two modules. One module
- is to load the partial group data only for parent finding process
-\end{block}
+a piece of code example in main.c:
+ \begin{verbatim}
+#ifdef SUBFIND
+  my_snprintf(outfname, MAXLEN,"%s/groups_%03d.fofcat", 
+       PARAMS.GROUP_DIR,snapshot_number);    
+  NFof0 = returnNhalo(outfname);
+#endif
+
+#ifndef FOF_ONLY
+#define RETURN_ONLY_FOFS 1  
+#endif
+   
+#ifdef SUSSING_TREES
+   my_snprintf(outfname,MAXLEN,"%s/%s%05d.z%5.3f.AHF_halos", 
+      PARAMS.GROUP_DIR, PARAMS.GROUP_BASE,snapshot_number,REDSHIFT[snapshot_number]);
+  NFof0 = returnNhalo_SUSSING(outfname,RETURN_ONLY_FOFS);
+#endif
+
+#ifdef BGC2
+  my_snprintf(outfname,MAXLEN,"%s/halos_%03d.0.bgc2",  PARAMS.GROUP_DIR, snapshot_number);
+  NFof0 = returnNhalo_bgc2(outfname,RETURN_ONLY_FOFS);
+#endif  
+
+#ifndef FOF_ONLY  
+#undef RETURN_ONLY_FOFS
+#endif
+ \end{verbatim}
+
+ The mixing of debugging code section and production code sections makes the reading difficult.
+ 
+\end{frame}
+
+% -------------------------------------------------------------
+\begin{frame}[fragile]
+
+\begin{verbatim}
+# debugging code....
+if (params.doDebug(BGC2)) {
+   .....
+} else if (params.doDebug(FOF_ONLY)) {
+   .....
+}
+
+# calculate the number of halos
+# we can also calculate nhalos for different situations
+NFof0 = returnNhalo(params,....)
+\end{verbatim}
 
 \end{frame}
 
 
-
 % -------------------------------------------------------------
-\subsection{Rigid Data Structure}
+\subsection{Rigid Data and Code Structure}
 \begin{frame}
-%    \frametitle{}
 
 \begin{block}{Why memory is not sufficient?} 
-The reason why memory is not sufficient is because the program needs to load in the whole snapshot data for computation. One computation needs two snapshots. For large enough snapshot like 150-200GB data this will cause the memory problem.
+The reason why memory is not sufficient is because the program needs to load in the whole snapshot data for computation. 
+One computation needs two snapshots. For large enough snapshot like 150-200GB data this will cause the memory problem.
  \end{block}
+
+\begin{block}{Redesign the data structure}
+The data structure for group should be divided into two parts:
+ \begin{enumerate}
+  \item the normal group data(the normal group data is also used in following two programs?);
+  \item group data only for parent finding process.
+ \end{enumerate}
+ We need to redesign the code structure so that the loading the group data can be performed for part of particle file. 
+\end{block}
+
+\end{frame}
+
+% -------------------------------------------------------------
+\begin{frame}[fragile]
+
+a general procedure for halo parent finding process:
+\begin{verbatim}
+# find hierarchy
+# it seems the result of find hierarchy only for group level
+form normal group data for group0 and group1 to 
+   calculate hierarchy (number of parent level);
+hold the result into a data structure/file;
+
+# perform finding parents;
+form group0 and group1 data only for parent seaching process;
+loading in group and possible particles data from particles file;
+load in the hierarchy result;
+perform finding parent process;
+\end{verbatim}
+
+\end{frame}
+
+% -------------------------------------------------------------
+\begin{frame}[fragile]
+
+\begin{block}{several questions we need to make it clear in the future:}
+ \begin{enumerate}
+  \item Can we split the large snapshot file into a collection of files?
+  \item How the result of searching process is accessed by other programs?
+  \item Do the other two programs also use the normal group data?
+  \item Does the big data analysis applicable for this situation?
+ \end{enumerate}
+\end{block}
+
+\end{frame}
+
+% -------------------------------------------------------------
+\section{Outlook for further Improvement}
+\begin{frame}[fragile]
+
+Previous suggestions are for step 1. Here is the summary of what we can achieve in the 
+step 1:
+ \begin{enumerate}
+  \item memory issue should be solved;
+  \begin{itemize}
+   \item use of smaller data structure for searching process;
+   \item loading data is flexible - we can either load in whole data file, or part of 
+   data file
+  \end{itemize}
+  \item can be used for more snapshots; 
+  \item data should be easier for maintenance and improving purpose;
+  \item use of high level programming features such as C++/java for programming.
+ \end{enumerate}
  
-\begin{block}{Suggestions}
-\begin{itemize}
- \item If the group data in a snapshot is independent with each other, we can cut the large snapshot into smaller snapshots. 
- \item reorganize the code so that we can load in part of the snapshot data, rather than the 
- whole data file.
+ \begin{alertblock}{Step1 is necessary}
+  Any further improvement must be based on a clear and flexible code structure.
+ \end{alertblock}
+
+
+\end{frame}
+
+% -------------------------------------------------------------
+\begin{frame}[fragile]
+
+For step 2, we have two options for consideration:
+\begin{block}{big data application transformation}
+ \begin{itemize}
+ \item  We need to find a situation that big data analysis is applicable here;
+ \item  If designed for big data analysis, we need to use Java for implementation.
 \end{itemize}
 \end{block}
 
+\begin{block}{go parallel}
+ We can also use multi-threading such as OpenMP or thread library inside Java to speed up
+ the calculation.
+\end{block}
+
 \end{frame}
 
 % -------------------------------------------------------------
+\section{Cost Estimation}
 \begin{frame}
-  
-  \begin{block}{Using the global variable} 
-  ``readshift'' array as an example:  used under macro ``SUSSING\_TREES''. In improving the program we need to consider
-  the matching between snapshot data and redshift data.
- \end{block}
-  
-\end{frame}
+%    \frametitle{}
 
-% -------------------------------------------------------------
-\subsection{Design of Scala}
-\begin{frame}
-  
-\end{frame}
+An applicable cost estimation is hard to make because of two factors:
+\begin{itemize}
+ \item  lack of background knowledge; 
+ \item  original code is hard to analyze.
+\end{itemize}
 
-
-% -------------------------------------------------------------
-\section{Features of Scala}
-\subsection{Type inference for Scala}
-\begin{frame}
+An rough cost estimation for step I implementation:
+\begin{itemize}
+ \item about 1.5-2 months for code design and code writing;
+ \item another 1.5-2 months for debugging and testing.
+\end{itemize}
 
 
 \end{frame}
-
 
 % -------------------------------------------------------------
 
