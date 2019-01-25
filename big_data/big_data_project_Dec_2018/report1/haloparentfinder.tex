@@ -220,12 +220,25 @@
 \end{frame}
 
 % -------------------------------------------------------------
-
+\section{Introduction}
 \begin{frame}
 %    \frametitle{}
 
-This program is about 2500 lines of code (including comments). Generally this is the first program, there are other two programs
-following this one. All of the three forms the entire program set. Below are the general procedure for the halo parent finding program:
+This program(HaloParentFinder) is about 2500 lines of code (including comments). 
+This is the first program, there are other two programs following the HaloParentFinder:
+\begin{itemize}
+ \item HaloParentFinder;
+ \item OrphanFixer;
+ \item MergerTree
+\end{itemize}
+
+\end{frame}
+
+% -------------------------------------------------------------
+\begin{frame}
+%    \frametitle{}
+
+General procedure for the HaloParentFinder:
 \begin{itemize}
  \item Load in parameters. The global parameters are stored in a global struct PARAMS;
  \item Calculate the number of groups - group0 and group1;
@@ -240,9 +253,9 @@ following this one. All of the three forms the entire program set. Below are the
 
 \end{frame}
 
+
 % -------------------------------------------------------------
 \section{Components}
-
 \subsection{Parameters Reading}
 \begin{frame}
 %    \frametitle{}
@@ -254,26 +267,26 @@ the parameters information.
 
 \end{frame}
 
+
+
 % -------------------------------------------------------------
 \subsection{Halo Groups}
 \begin{frame}
 %    \frametitle{}
 
 ``group'' is the central idea for this program - the structure of group is defined in io.h. Group is a collection of particles(Halo). One data file (snapshot)
-may containing may groups.
+may containing many groups.
 
 \begin{block}{reading in the group data}
  \begin{itemize}
   \item first line is the the number of groups data;
-  \item the following line is the N particles and the halo ID;
-  \item after the lines are the particles data, like  x, y, z, vx, vy, vz etc. are all allocated based on the number of particles.
+  \item for each group data first line is the number of particles and the halo ID;
+  \item the following lines are the particles data, like  x, y, z, vx, vy, vz etc. These data in group struct are all allocated based on the number of particles.
  \end{itemize}
 \end{block}
 
 
-In the code the group\_data pointer is an array of groups. The group data is initialized in the  the loadgroups
-function.
-
+In the code the group\_data pointer is an array of groups. The group data is initialized in the  the loadgroups function.
 
 \end{frame}
 
@@ -281,17 +294,22 @@ function.
 \begin{frame}
 %    \frametitle{}
 
-\begin{block}{The drawback for the design of group data}
-  \begin{enumerate}
-   \item the design of the group data corresponding to the whole snapshot - not flexible to change. Each time for HaloParentFinder
-   we need to load in the all group data in the snapshot, this is the core reason why the memory usage got problem. 
-   \item allocate/free group data is cumbersome. Difficult to get the NGroups for the initialization.
-   \item parent finding process only use a small portion of group data - however currently we need to carry the whole data 
-   to do the process.
-   \item the definition of the data structure is hard to modify.
-   \item the coding style for the data structure is not clear for maintenance purpose.
-  \end{enumerate}
+\begin{block}{Core reason for the memory insufficiency}
+In the group array the majority of the data is for particles, like particles $x$, $y$
+and $z$. For the large snapshot who contains $10^5$ groups, and each group contains around $10^5$ particles; it's clear to see when loading in all of particles data from the snapshot the particles data uses most of the memory.
 \end{block}
+
+\begin{alertblock}{How to improve}
+\begin{itemize}
+ \item the bottleneck step (parent finding process) seems only using particles ID data, so we do not need to carry all of particles data around;
+ \item we can load in part/whole snapshot (this is also required for big data transformation);
+ \item use high level data structure from the language - STL vector in C++, vector class from Java etc. so that we do not need to allocate/free group data explicitly. 
+\end{itemize}
+
+ 
+\end{alertblock}
+
+
 
 \end{frame}
 
@@ -301,17 +319,17 @@ function.
 %    \frametitle{}
 
 \begin{block}{Find Hierarchy}
- Finds the hierarchy level for each snapshot file (group0 and group1). 
+ Finding the hierarchy level (number of parents etc.) for each snapshot file (group0 and group1). 
 \end{block}
-This part may not be a costive part since it only runs for a single snapshot. Another point is, this function probably
+This part may not be a bottleneck part since it only runs for a single snapshot. Another point is, this function probably
 is the only one uses the particle coordinates like $x$, $y$, $z$ and $xcen$, $ycen$ etc. in the group data.
 
-Therefore, it implies that we can divided the whole group data into two parts:
+Therefore, it implies that we may be able to divide the whole group data into two parts:
 \begin{itemize}
  \item Part I is for parent finding in terms of group and particles;
  \item Part II contains other data fields that not used for the parent finding. 
 \end{itemize}
-Such re-configuration can enhance the parent finding efficiency and memory usage.
+Such re-configuration may enhance the parent finding efficiency and memory usage.
 
 
 \end{frame}
@@ -320,21 +338,19 @@ Such re-configuration can enhance the parent finding efficiency and memory usage
 \begin{frame}[fragile]
 %    \frametitle{}
 
-\begin{block}{Find fof parents and find all parent}
+\begin{block}{Find fof parents and find all parents}
  \begin{verbatim}
 form arrays to extract ID data from group 1;
 loop over group data in group0:
      loop over group ID data in group 1:
           compare the ID data between groups;
-          update this group data in group0;
+          update the group data in group0;
           update the corresponding group data in group1;
      end loop
 end loop
  \end{verbatim}
 \end{block}
-Both of the two functions contains similar structure like above. This will be the first key part for big data transformation
-and for optimization. Especially for big data application, this part need to be carefully designed to avoid the communication 
-penalty.
+Both of the two functions contains similar structure like above. Currently I suspect this is the bottle-neck part for the program, hence this will be the key part for big data transformation and for optimization. For big data application, this part need to be carefully designed to avoid the communication penalty.
 
 \end{frame}
 
@@ -348,7 +364,7 @@ loop over remaining snapshot data files:
      free the group1 data array;
      initialize and load in the group1 data array;
      find hierarchy for group1;
-     find fof parents and find all parent for group 
+     find fof parents and find all parent for group; 
      data in group0;
 end loop
  \end{verbatim}
@@ -362,37 +378,35 @@ this step is to reuse the previous functions so that to searching the remaining 
 %    \frametitle{}
 
 \begin{block}{Remaining functions: check\_fof\_matches and find\_progenitor}
-both of the two functions has similar structure with parents finding functions, they are only used
-for two adjacent snapshots.
+both of the two functions has similar structure with parents finding functions, they are only used for two adjacent snapshots.
 \end{block}
 
 \end{frame}
 
 % -------------------------------------------------------------
-\section{Problems and Solutions}
+\section{Suggestions to Improve Code}
 \begin{frame}
 %    \frametitle{}
 
-\begin{block}{Code is hard to understand, maintain and improved} 
+\begin{block}{List for Improving:}
  \begin{itemize}
-  \item abuse use of macro - mixing the debug codes with the production codes;
-  \item rigid data structure - parent searching process is cubersome;
-  \item code structure is only for loading whole snapshot data - key reason for memory problem;
-  \item use of global variables - strong coupling between the functions in the program.
+  \item improve the way to use macro so that code is easier for reading;
+  \item using high level data structure such as vector etc. to replace the current 
+  group array pointer;
+  \item using Object-Oriented Programming (OOP) for encapsulation. The final codes 
+  will be a collection of classes and the whole HaloParentFinder will be a module. This 
+  step is important for future big data application transformation;
+  \item improve the group data structure so that to reduce the memory usage;
+  \item revise the reading of group data so that loading part/whole snapshot data is 
+  possible;
+  \item revise the code structure for searching functions.
  \end{itemize}
 \end{block}
-
-\begin{block}{Suggestion}
- The code needs to be rewritten. In general we can modify the codes so that to solve the memory
- problem, however in this way debugging cost is big. Rewriting may cost several weeks more but
- the final code will be easier for maintaining.
-\end{block}
-
  
 \end{frame}
 
 % -------------------------------------------------------------
-\subsection{Abuse Use of Macro}
+\subsection{Use of Macro}
 \begin{frame}[fragile]
 %    \frametitle{}
 
@@ -423,14 +437,13 @@ a piece of code example in main.c:
 #undef RETURN_ONLY_FOFS
 #endif
  \end{verbatim}
-
- The mixing of debugging code section and production code sections makes the reading difficult.
  
 \end{frame}
 
 % -------------------------------------------------------------
 \begin{frame}[fragile]
 
+How can we express it in another way:
 \begin{verbatim}
 # debugging code....
 if (params.doDebug(BGC2)) {
@@ -448,21 +461,16 @@ NFof0 = returnNhalo(params,....)
 
 
 % -------------------------------------------------------------
-\subsection{Rigid Data and Code Structure}
+\subsection{Data and Code Structure}
 \begin{frame}
 
-\begin{block}{Why memory is not sufficient?} 
-The reason why memory is not sufficient is because the program needs to load in the whole snapshot data for computation. 
-One computation needs two snapshots. For large enough snapshot like 150-200GB data this will cause the memory problem.
- \end{block}
-
 \begin{block}{Redesign the data structure}
-The data structure for group should be divided into two parts:
+The data structure for group could be divided into two parts:
  \begin{enumerate}
   \item the normal group data(the normal group data is also used in following two programs?);
   \item group data only for parent finding process.
  \end{enumerate}
- We need to redesign the code structure so that the loading the group data can be performed for part of particle file. 
+ The redesign of the code structure enables the loading the group data in more flexible way. 
 \end{block}
 
 \end{frame}
@@ -473,10 +481,9 @@ The data structure for group should be divided into two parts:
 a general procedure for halo parent finding process:
 \begin{verbatim}
 # find hierarchy
-# it seems the result of find hierarchy only for group level
 form normal group data for group0 and group1 to 
    calculate hierarchy (number of parent level);
-hold the result into a data structure/file;
+hold the result into a data structure;
 
 # perform finding parents;
 form group0 and group1 data only for parent seaching process;
@@ -490,7 +497,7 @@ perform finding parent process;
 % -------------------------------------------------------------
 \begin{frame}[fragile]
 
-\begin{block}{several questions we need to make it clear in the future:}
+\begin{block}{questions:}
  \begin{enumerate}
   \item Can we split the large snapshot file into a collection of files?
   \item How the result of searching process is accessed by other programs?
@@ -515,14 +522,8 @@ step 1:
    data file
   \end{itemize}
   \item can be used for more snapshots; 
-  \item data should be easier for maintenance and improving purpose;
   \item use of high level programming features such as C++/java for programming.
  \end{enumerate}
- 
- \begin{alertblock}{Step1 is necessary}
-  Any further improvement must be based on a clear and flexible code structure.
- \end{alertblock}
-
 
 \end{frame}
 
@@ -538,8 +539,7 @@ For step 2, we have two options for consideration:
 \end{block}
 
 \begin{block}{go parallel}
- We can also use multi-threading such as OpenMP or thread library inside Java to speed up
- the calculation.
+ We can also use multi-threading such as OpenMP or thread library inside Java to speed up the calculation.
 \end{block}
 
 \end{frame}
@@ -549,13 +549,7 @@ For step 2, we have two options for consideration:
 \begin{frame}
 %    \frametitle{}
 
-An applicable cost estimation is hard to make because of two factors:
-\begin{itemize}
- \item  lack of background knowledge; 
- \item  original code is hard to analyze.
-\end{itemize}
-
-An rough cost estimation for step I implementation:
+An coarse cost estimation for step I implementation:
 \begin{itemize}
  \item about 1.5-2 months for code design and code writing;
  \item another 1.5-2 months for debugging and testing.
