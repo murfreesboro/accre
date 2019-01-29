@@ -293,6 +293,119 @@ abs function based on the integer variables.
 \end{frame}
 
 % -------------------------------------------------------------
+\subsection{Variable vs. value}
+\begin{frame}[fragile]
+
+\begin{block}{From IP view, Variable is a chunk of memory in stack or heap}
+\begin{verbatim}
+
+// automatic varible
+int x = 8;
+
+// struct 
+struct address 
+{ 
+   char name[50]; 
+   char street[100]; 
+   char city[50]; 
+   char state[20]; 
+   int zipCode;
+};
+
+// array
+double arr[100];
+\end{verbatim} 
+\end{block}
+Everything will be finally transformed into instructions on these memory pieces.
+
+\end{frame}
+
+
+% -------------------------------------------------------------
+\begin{frame}[fragile]
+
+\begin{block}{Pure FP like Haskell variable is not an abstraction of memory anymore}
+For example, in the following Haskell code:
+\begin{verbatim}
+ let r = 2
+ 
+ // the following lines can not be compiled
+ r = 5
+ r = r + 4
+\end{verbatim}
+\end{block}
+
+Here the variable is more like a conceptual symbol. Here as in the example below, 
+the $x$ represents the radius of the cycle, and $y$ is the corresponding area of cycle. $x$ and $y$ correspond to different concepts:
+\begin{equation}
+y = PI*x^{2}
+\end{equation}
+
+\end{frame}
+
+% -------------------------------------------------------------
+\begin{frame}[fragile]
+
+In the IP $x$ and $y$ are same type of variable therefore you can use the same variable to do it:
+\begin{equation}
+x = PI*x^{2}
+\end{equation}
+This is very common for coding. However this expression is mathematically not correct. In this sense, FP concentrates on higher level of abstraction than the IP.
+
+
+\end{frame}
+
+% -------------------------------------------------------------
+\subsection{The difference on functions}
+\begin{frame}[fragile]
+  
+\begin{block}{In IP function is a a collection of actions:}
+\begin{verbatim}
+// user-defined function to check prime number
+int checkPrimeNumber(int n)
+{
+    int j, flag = 1;
+
+    for(j=2; j <= n/2; ++j)
+    {
+        if (n%j == 0)
+        {
+            flag =0;
+            break;
+        }
+    }
+    return flag;
+}   
+\end{verbatim}   
+\end{block}
+From the machine point of view, function is a reference of instruction set. As
+loading the function the function stack will be built, input and output parameters
+will be pushed to the stack etc.
+  
+\end{frame}
+
+% -------------------------------------------------------------
+\begin{frame}
+
+functions and method: function needs something returned.
+
+function and variable are interchangeable
+
+difference between function and method.
+
+function can be very short: lambda function.
+
+function can be another function: high order functions.
+. 
+\begin{block}{For FP function is a more fundamental piece}
+ 
+\end{block}
+
+  
+\end{frame}
+
+
+% -------------------------------------------------------------
 \subsection{Why use FP for big data analysis?}
 \begin{frame}
 %    \frametitle{}
@@ -310,16 +423,7 @@ abs function based on the integer variables.
 
 \end{frame}
 
-% -------------------------------------------------------------
-\begin{frame}
-      
-\end{frame}
 
-% -------------------------------------------------------------
-\subsection{Design of Scala}
-\begin{frame}
-  
-\end{frame}
 
 % -------------------------------------------------------------
 \begin{frame}
