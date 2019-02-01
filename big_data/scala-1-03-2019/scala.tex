@@ -221,20 +221,20 @@
 
 % -------------------------------------------------------------
 
-\section{Introduction}
-\subsection{What is functional programming(FP)?}
+\section{What is functional programming(FP)?}
 \begin{frame}
 %    \frametitle{}
 
 \begin{block}{Imperative Programming(IP)}
-Program is built from one or more procedures. Like Fortran/C/C++ etc.
+Program is built from instructions and data. Like Fortran/C/C++ etc.
 \end{block}
 
 \begin{block}{Functional Programming(FP)}
-Program concentrates on the mapping/transformation between the data fields.  
+Quoting from Wikipedia: ``functional programming is a programming 
+paradigm - a style of building the structure and elements of computer 
+programs - that treats computation as the evaluation of mathematical 
+functions and avoids changing-state and mutable data.''
 \end{block}
-
-In general, FP is in more abstract level than the IP.
 
 \end{frame}
 
@@ -285,15 +285,37 @@ abs function based on the integer variables.
 
 \begin{block}{key features of IP and FP}
  \begin{description}
- \item [IP] instructions
- \item [FP] transformations
+ \item [IP] instructions on the data
+ \item [FP] transformations on the data
 \end{description}
 \end{block}
 
 \end{frame}
 
 % -------------------------------------------------------------
-\subsection{Variable vs. value}
+\section{General feature of Scala}
+\begin{frame}[fragile]
+
+General features of Scala:
+\begin{itemize}
+ \item a mixed language between FP and OOP - ``FP and OOP are orthogonal with each other'';
+ \item compiled into Java bytecode and performed on JVM;
+ \item seamless integrated with Java, able to reuse many Java packages.
+\end{itemize}
+
+Why Scala mixes FP and OOP together? 
+\begin{itemize}
+ \item support OOP so that to derive the heritage from Java;
+ \item support FP so that to use this sharp tool.
+\end{itemize}
+The bad thing is such a mixture makes the language features complicated.
+
+\end{frame}
+
+
+
+% -------------------------------------------------------------
+\section{Variable}
 \begin{frame}[fragile]
 
 \begin{block}{From IP view, Variable is a chunk of memory in stack or heap}
@@ -322,6 +344,7 @@ Everything will be finally transformed into instructions on these memory pieces.
 
 
 % -------------------------------------------------------------
+\subsection{Difference on using variable}
 \begin{frame}[fragile]
 
 \begin{block}{Pure FP like Haskell variable is not an abstraction of memory anymore}
@@ -335,7 +358,7 @@ For example, in the following Haskell code:
 \end{verbatim}
 \end{block}
 
-Here the variable is more like a conceptual symbol. Here as in the example below, 
+Here the variable is more like a conceptual symbol. As in the example below, 
 the $x$ represents the radius of the cycle, and $y$ is the corresponding area of cycle. $x$ and $y$ correspond to different concepts:
 \begin{equation}
 y = PI*x^{2}
@@ -350,13 +373,105 @@ In the IP $x$ and $y$ are same type of variable therefore you can use the same v
 \begin{equation}
 x = PI*x^{2}
 \end{equation}
-This is very common for coding. However this expression is mathematically not correct. In this sense, FP concentrates on higher level of abstraction than the IP.
+This is very common for coding. However this expression is mathematically not correct. In pure FP language it is also not allowed.
+
+However, as a mixed programming Lagrange between OOP and FP, Scala allows the variable to increase itself like $a = a + 1$.
+Also the operators like $+=$, $-=$ etc. are all supported in Scala.
+
+\end{frame}
+
+% -------------------------------------------------------------
+\subsection{Use of Val}
+\begin{frame}[fragile]
+
+Scala introduce a special class to express the immutable variable, 
+which is ``val'' (value):
+\begin{verbatim}
+ val x = 10;
+\end{verbatim}
+If an object is declared as ``val'', then it can not be changed. Such concept 
+is similar to the Java's ``final'' and ``const'' in C++. 
+
+As a FP language, Scala advocates to use ``val'' as much as it can. One main reason is that mutable variables (also with pointers) causes a lot of problem:
+\begin{itemize}
+ \item serial implementation: segmentation fault, memory leak etc.
+ \item parallel implementation: false sharing, racing condition etc.
+\end{itemize}
+However with immutable variables these problems do not exit.
+
+\end{frame}
+
+% -------------------------------------------------------------
+\subsection{Difference on loop structure}
+\begin{frame}[fragile]
+
+Because of the essential difference between IP and FP, there's 
+significant programming style difference between IP and FP. 
+
+For example, the loop structure:
+\begin{verbatim}
+for(int i=0; i<n; i++) {
+   ....
+}
+\end{verbatim}
+Such loop structure is conceptually ``invalid'' in FP. Then how can we do a loop?
+
+Scala use other tricks to do that (generator expression):
+\begin{verbatim}
+var a = 0.0;
+numList = Lists(1.0  2.0  3.0  4.0);
+for( a <- numList ){
+   println( "Value of a: " + a );
+} 
+\end{verbatim}
+So there's no ``self-incremental'' operations, the details for the loop is hidden behind the expression. This point makes Scala is similar to Python. 
+
+\end{frame}
+
+% -------------------------------------------------------------
+\subsection{Complexity on the containers}
+\begin{frame}
+
+The mixture design supporting OOP and FP, the data structures supported by Scala 
+then becomes complicated in terms of categories:
+\begin{itemize}
+ \item mutable data structures;
+ \item immutable data structures;
+ 
+\end{itemize}
+
+
+is divided into two categories:
+\begin{itemize}
+ \item mutable data structures: list, array, set, queue etc.
+ \item immutable data structures: 
+\end{itemize}
 
 
 \end{frame}
 
 % -------------------------------------------------------------
-\subsection{The difference on functions}
+\begin{frame}[fragile]
+
+collections: mutable and immutable.
+
+In Scala Array's element is mutable:
+\begin{verbatim}
+val numbers = Array(1, 2, 3, 4);
+numbers(3)  = 100; 
+\end{verbatim}
+In Haskell the array is totally immutable because of the FP.
+
+On the other hand, List in Scala is immutable:
+\begin{verbatim}
+ 
+\end{verbatim}
+
+
+\end{frame}
+
+% -------------------------------------------------------------
+\section{The difference on functions}
 \begin{frame}[fragile]
   
 \begin{block}{In IP function is a a collection of actions:}
@@ -387,6 +502,13 @@ will be pushed to the stack etc.
 % -------------------------------------------------------------
 \begin{frame}
 
+
+
+\end{frame}
+
+% -------------------------------------------------------------
+\begin{frame}
+
 functions and method: function needs something returned.
 
 function and variable are interchangeable
@@ -406,7 +528,7 @@ function can be another function: high order functions.
 
 
 % -------------------------------------------------------------
-\subsection{Why use FP for big data analysis?}
+\section{Why use FP for big data analysis?}
 \begin{frame}
 %    \frametitle{}
 
@@ -422,24 +544,6 @@ function can be another function: high order functions.
  \end{itemize} 
 
 \end{frame}
-
-
-
-% -------------------------------------------------------------
-\begin{frame}
-
-
-\end{frame}
-
-
-% -------------------------------------------------------------
-\section{Features of Scala}
-\subsection{Type inference for Scala}
-\begin{frame}
-
-
-\end{frame}
-
 
 % -------------------------------------------------------------
 
