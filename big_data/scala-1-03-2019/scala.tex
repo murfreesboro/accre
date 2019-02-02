@@ -205,8 +205,7 @@
 % ---------------------------------------------------------------------
 
 %% preamble
-\title[Big Data Analysis In ACCRE]{Big Data Analysis in ACCRE}
-\subtitle{Introduction to Scala}
+\title[Introduction to Functional Programming and Scala]{Introduction to Functional Programming and Scala}
 \author{Fenglai Liu}
 \institute[ACCRE]{fenglai@accre.vanderbilt.edu}
 
@@ -226,7 +225,7 @@
 %    \frametitle{}
 
 \begin{block}{Imperative Programming(IP)}
-Program is built from instructions and data. Like Fortran/C/C++ etc.
+Program is built from instructions and data. Fortran/C/C++ etc.
 \end{block}
 
 \begin{block}{Functional Programming(FP)}
@@ -235,24 +234,6 @@ paradigm - a style of building the structure and elements of computer
 programs - that treats computation as the evaluation of mathematical 
 functions and avoids changing-state and mutable data.''
 \end{block}
-
-\end{frame}
-
-% -------------------------------------------------------------
-\begin{frame}
-%    \frametitle{}
-
-A typical conceptual example:
-\begin{equation}
- g(\omega) = \int_{-\infty}^{+\infty} f(x)\cos(\omega x) dx
-\end{equation}
-
-\begin{itemize}
- \item For IP point of view, we think for a given function $f(x)$ how we can do the integration and 
- derive the result Fourier transformation $g(\omega)$;
- \item For FP point of view, we think this is a natural mapping between a general function $f(x)$
- and $g(x)$, and both of the two functions are in the real number fields $\Re$.
-\end{itemize}
 
 \end{frame}
 
@@ -293,7 +274,7 @@ abs function based on the integer variables.
 \end{frame}
 
 % -------------------------------------------------------------
-\section{General feature of Scala}
+\subsection{General features of Scala}
 \begin{frame}[fragile]
 
 General features of Scala:
@@ -306,16 +287,15 @@ General features of Scala:
 Why Scala mixes FP and OOP together? 
 \begin{itemize}
  \item support OOP so that to derive the heritage from Java;
- \item support FP so that to use this sharp tool.
+ \item FP is complimentary to OOP.
 \end{itemize}
 The bad thing is such a mixture makes the language features complicated.
 
 \end{frame}
 
 
-
 % -------------------------------------------------------------
-\section{Variable}
+\section{Variable(Data Structure)}
 \begin{frame}[fragile]
 
 \begin{block}{From IP view, Variable is a chunk of memory in stack or heap}
@@ -375,7 +355,7 @@ x = PI*x^{2}
 \end{equation}
 This is very common for coding. However this expression is mathematically not correct. In pure FP language it is also not allowed.
 
-However, as a mixed programming Lagrange between OOP and FP, Scala allows the variable to increase itself like $a = a + 1$.
+However, as a mixed programming lagrange between OOP and FP, Scala allows the variable to increase itself like $a = a + 1$.
 Also the operators like $+=$, $-=$ etc. are all supported in Scala.
 
 \end{frame}
@@ -387,7 +367,7 @@ Also the operators like $+=$, $-=$ etc. are all supported in Scala.
 Scala introduce a special class to express the immutable variable, 
 which is ``val'' (value):
 \begin{verbatim}
- val x = 10;
+ val x = 10
 \end{verbatim}
 If an object is declared as ``val'', then it can not be changed. Such concept 
 is similar to the Java's ``final'' and ``const'' in C++. 
@@ -418,13 +398,13 @@ Such loop structure is conceptually ``invalid'' in FP. Then how can we do a loop
 
 Scala use other tricks to do that (generator expression):
 \begin{verbatim}
-var a = 0.0;
-numList = Lists(1.0  2.0  3.0  4.0);
+var a = 0.0
+numList = Lists(1.0  2.0  3.0  4.0)
 for( a <- numList ){
-   println( "Value of a: " + a );
+   println( "Value of a: " + a )
 } 
 \end{verbatim}
-So there's no ``self-incremental'' operations, the details for the loop is hidden behind the expression. This point makes Scala is similar to Python. 
+So there's no ``self-incremental'' operations, the details for the loop is hidden behind the expression. This is similar to Python.
 
 \end{frame}
 
@@ -432,49 +412,39 @@ So there's no ``self-incremental'' operations, the details for the loop is hidde
 \subsection{Complexity on the containers}
 \begin{frame}
 
-The mixture design supporting OOP and FP, the data structures supported by Scala 
-then becomes complicated in terms of categories:
+The fundamental difference on the design of ``variable''(data structure) makes FP completely go into another world.
+One important example is the containers: list, array, set, map etc.
+
+FP believes that all of data structures should be immutable. Under this point, how the Scala support containers to meet 
+both FP and OOP requirements?
 \begin{itemize}
- \item mutable data structures;
- \item immutable data structures;
- 
+ \item mutable containers: Lists, Vector etc.;
+ \item immutable containers: ListBuffer, ArrayBuffer etc.;
 \end{itemize}
-
-
-is divided into two categories:
-\begin{itemize}
- \item mutable data structures: list, array, set, queue etc.
- \item immutable data structures: 
-\end{itemize}
-
+They have different name and usage.
 
 \end{frame}
 
 % -------------------------------------------------------------
-\begin{frame}[fragile]
+\section{Functions}
+\subsection{Different design on the functions}
+\begin{frame}
 
-collections: mutable and immutable.
-
-In Scala Array's element is mutable:
-\begin{verbatim}
-val numbers = Array(1, 2, 3, 4);
-numbers(3)  = 100; 
-\end{verbatim}
-In Haskell the array is totally immutable because of the FP.
-
-On the other hand, List in Scala is immutable:
-\begin{verbatim}
- 
-\end{verbatim}
-
+\begin{alertblock}{The key concept in FP is ``data is immutable''}
+ As the data becomes immutable in FP, how to handle data(functions, methods etc.) in FP? 
+ \begin{itemize}
+  \item data is always local copy in different functions, how to minimize the cost? ``Lazy evaluation''.
+  \item how to express a general loop structure? ``Recursion''.
+ \end{itemize}
+\end{alertblock}
+In FP the concept for ``function'' accordingly becomes very different with the functions in IP.
 
 \end{frame}
 
 % -------------------------------------------------------------
-\section{The difference on functions}
 \begin{frame}[fragile]
   
-\begin{block}{In IP function is a a collection of actions:}
+\begin{block}{In IP function is a a collection of actions on data}
 \begin{verbatim}
 // user-defined function to check prime number
 int checkPrimeNumber(int n)
@@ -494,38 +464,134 @@ int checkPrimeNumber(int n)
 \end{verbatim}   
 \end{block}
 From the machine point of view, function is a reference of instruction set. As
-loading the function the function stack will be built, input and output parameters
-will be pushed to the stack etc.
+loading the function into memory the function stack will be built, instructions are pushed into cache; 
+input and output parameters will be pushed to the stack etc.
   
 \end{frame}
 
 % -------------------------------------------------------------
+\subsection{Functions in Scala}
 \begin{frame}
 
+Conceptually ``function'' is something totally different in FP. The function in FP is more close as a math function. 
+In FP, the function is a procedure that transforms the data into another type of data:
+\begin{itemize}
+ \item FP function must have input(input is immutable);
+ \item FP function must have output;
+ \item FP function is interchangeable with ``val'';
+ \item FP function can be passed as parameter into another function.
+\end{itemize}
+As quoted from Scala document, `` A Function Type is (roughly) a type of the form $(T1, ..., Tn) => U$''. 
+
+A typical example for function in FP is like 
+\begin{equation}
+ y = \sin (x) 
+\end{equation}
+For any input $x$, the function $\sin$ returns a value(val) as $y$. 
 
 
 \end{frame}
 
 % -------------------------------------------------------------
-\begin{frame}
+\begin{frame}[fragile]
 
-functions and method: function needs something returned.
+\begin{block}{Functions returns value}
+\begin{verbatim}
+val add = { (x : Int, y : Int) => 
+     val sum = x + y
+     sum
+}
 
-function and variable are interchangeable
-
-difference between function and method.
-
-function can be very short: lambda function.
-
-function can be another function: high order functions.
-. 
-\begin{block}{For FP function is a more fundamental piece}
- 
+// this is the way to use it
+val result = add(6,7)
+\end{verbatim}
 \end{block}
 
+Another way to use ``def'' to create the function:
+\begin{verbatim}
+def max(x: Int, y: Int): Int = {
+     if (x > y) x else y
+}
+\end{verbatim}
+Only minor difference between the two ways of declaration. 
+ 
+\end{frame}
+
+% -------------------------------------------------------------
+\subsection{How to understand functions in FP?}
+\begin{frame}[fragile]
+
+\begin{alertblock}{Functions concentrates on ``transformation'' of the immutable data}
+ The key for function is to transform the data. Instead of concentrating on ``actions'' on 
+ data, the function in FP use a completely different way.
+ 
+ For coding there's three fundamental control structures:
+ \begin{description}
+  \item [sequence] Use lazy evaluation to minimize the cost;
+  \item [if ...else]  Use partial function;
+  \item [loop] Use recursion
+ \end{description}
+\end{alertblock}
+
+More advanced features for functions
+ \begin{itemize}
+  \item high order function;
+  \item curry function etc.
+ \end{itemize}
+
+\end{frame}
+
+% -------------------------------------------------------------
+\subsection{Lazy evaluation}
+\begin{frame}[fragile]
+
   
 \end{frame}
 
+% -------------------------------------------------------------
+\subsection{Partial function }
+\begin{frame}[fragile]
+
+Function only process 
+  
+\end{frame}
+
+
+% -------------------------------------------------------------
+\subsection{Recursion function}
+\begin{frame}[fragile]
+
+  
+\end{frame}
+
+% -------------------------------------------------------------
+\begin{frame}[fragile]
+
+  
+\end{frame}
+
+% -------------------------------------------------------------
+\subsection{High order function}
+\begin{frame}[fragile]
+
+function can be passed into another function as parameter:
+\begin{verbatim}
+
+// this is a function to convert integer to string
+val convert2String=(x:Int)=>"==[" + x.toString() + "]=="
+
+// now define a function to apply that
+def apply(f: Int => String, v: Int) = f(v)
+
+// call the function
+apply(convert2String,36)
+//output: ==[36]== 
+\end{verbatim}
+This is more like the operators in the functional analysis, the function
+can be functional (function of functions).
+
+  
+\end{frame}
 
 % -------------------------------------------------------------
 \section{Why use FP for big data analysis?}
