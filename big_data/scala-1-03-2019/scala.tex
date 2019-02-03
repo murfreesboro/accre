@@ -545,14 +545,67 @@ More advanced features for functions
 \subsection{Lazy evaluation}
 \begin{frame}[fragile]
 
+Because in FP data is passed by value (because of the immutable requirement), this will cause trouble
+for the big objects such as large containers. Therefore, FP uses lazy evaluation to reduce the stack cost.
+
+Lazy evaluation is to evaluate the variable when it is really put into use. For example:
+\begin{verbatim}
+scala> val num = 3
+num: Int = 3
+
+scala> lazy val lazyNum = 3
+lazyNum: Int = 
+
+scala> lazyNum
+res0: Int = 3
+\end{verbatim}
+When the lazuNum is declared, it is actually not exist. When it is really used (print out it's content), then
+the lazyNum begins to exist in the memory.
   
+\end{frame}
+
+% -------------------------------------------------------------
+\begin{frame}[fragile]
+
+\begin{block}{Lazy evaluation is a special FP feature}
+Lazy evaluation can be performed is because the use of $\lambda$ calculus\footnote{
+\url{https://en.wikipedia.org/wiki/Lambda_calculus}} in functional programming.  
+In $\lambda$ caculus a function can be abstracted as ``operation'', and the application of functions
+can be expressed as ``algorithmic operations'' that can be theoretically evaluated. Therefore, it's able 
+to judge how the variable is transformed in the final state, without to evaluate it step by step.
+\end{block}
+
+\begin{block}{An example}
+\begin{verbatim}
+// this is the normal way, operations performed step by step
+scala> (1 to 1000000000).filter(_ % 2 != 0).take(20).toList
+java.lang.OutOfMemoryError: GC overhead limit exceeded
+
+// this is to use lazy evaluation on the same list container
+// it does not cause memory leak is because the 
+// List(1 to 1000000000) is not really saved into memory
+scala> (1 to 1000000000).view.filter(_ % 2 != 0).take(20).toList
+res2: List[Int] = List(1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 
+                                27, 29, 31, 33, 35, 37, 39)
+\end{verbatim}
+\end{block}
+
+
 \end{frame}
 
 % -------------------------------------------------------------
 \subsection{Partial function }
 \begin{frame}[fragile]
 
-Function only process 
+Partial function in FP is used to realize the ``if...else'' control structure: 
+\begin{verbatim}
+val squareRoot: PartialFunction[x : Double] = {
+  case x if x >= 0 => Math.sqrt(x)
+} 
+\end{verbatim}
+In this function it is not a ``one to one'' mapping between the input $x$ and the returned 
+function value, the function only works on half of interval of $x$.
+
   
 \end{frame}
 
@@ -561,12 +614,17 @@ Function only process
 \subsection{Recursion function}
 \begin{frame}[fragile]
 
-  
-\end{frame}
-
-% -------------------------------------------------------------
-\begin{frame}[fragile]
-
+In FP the recursion function is used to realize the loop control structure:
+\begin{verbatim}
+def factorial(n: BigInt): BigInt = {  
+     if (n <= 1)
+        1  
+     else    
+        n * factorial(n - 1)
+} 
+\end{verbatim}
+There are a lot of tricks used can optimize the use of recursion function, 
+such as optimization onto ``tail-recursive'' functions.
   
 \end{frame}
 
@@ -589,25 +647,42 @@ apply(convert2String,36)
 \end{verbatim}
 This is more like the operators in the functional analysis, the function
 can be functional (function of functions).
-
   
 \end{frame}
 
 % -------------------------------------------------------------
-\section{Why use FP for big data analysis?}
+\section{Summary}
+\begin{frame}
+
+Scala right now is the most complicated language in the solar system.....
+\begin{block}{Scala features not covered in this talk}
+\begin{itemize}
+ \item OOP features of Scala such as objects, trait etc.
+ \item template;
+ \item containers;
+ \item parallel; 
+ \item etc.
+\end{itemize} 
+\end{block}
+
+\end{frame}
+
+
+% -------------------------------------------------------------
 \begin{frame}
 %    \frametitle{}
 
- Comparing with Imperative Programming(IP), FP has it's own advantages in programming:
+\begin{block}{Why use FP for big data analysis?}
  \begin{itemize}
- \item FP concentrates on the data fields. The focus on FP is how to do transformations on the given data fields, which 
- makes it perfect design for handle data analysis.
+ \item Theoretically fit for big data analysis. The data is considered to be immutable, and functions are the operations on 
+ the data. FP features like lazy evaluation can be perfectly fit for the design.
  \item Better design for parallel. In FP the variable should be immutable (for example, in pure FP language like Haskell).
  Therefore the parallel design problems(false sharing, racing condition etc.) in IP language like C/Fortran/C++ etc. do not 
- exist. 
+ exist; 
  \item More abstraction for code. Because the FP concentrates on more abstract level than IP, usually the code is shorter;
  which makes FP a good candidate for fast development choice.
- \end{itemize} 
+ \end{itemize}
+\end{block} 
 
 \end{frame}
 
