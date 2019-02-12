@@ -1,0 +1,31 @@
+
+################################################
+#  use new-pr and update-pr for easybuild
+################################################
+
+1) when finish the eb file, use --new-pr:
+eb --new-pr lpsolve-5.5.2.5-foss-2017b.eb lpsolve-5.5.2.5-intel-2017b.eb
+
+this step will create a PR in easybuild develop
+
+2) using ebpr PR# to double check it, result is automatically uploaded.
+
+3) 
+
+
+################################################
+# working with easybuild git branch
+# here is an example
+################################################
+
+fetch all of my branches from the remote easybuild project
+1) git fetch origin
+
+let's see whether the remote branch has been downloaded to local copy
+2) git branch -r
+
+finally checkout that branch
+3) git checkout 20190201181921_new_pr_ABySS203
+
+now we can do changing file name, changing eb files etc. and finally git push 
+will send the modifications to the remote end
