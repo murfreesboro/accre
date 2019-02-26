@@ -40,6 +40,16 @@ for the job,  so all the allocated nodes belonging to the same architecture. We 
 #SBATCH --constraint=[sandybridge|haswell|skylake].
 
 
+############################################
+# show the drained nodes, and failed nodes
+############################################
+sinfoprobs, using this command to show to failed node. For more information you can see the wiki page of slurm.
 
+
+
+############################################
+# get a user's previous job status with sacct
+############################################
+sacct -S 2019-02-16 -u taylodl4 --format=JobID,state,time,MaxRss,nnodes,ncpus,nodelist
 
 
