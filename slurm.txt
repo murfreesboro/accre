@@ -40,6 +40,10 @@ for the job,  so all the allocated nodes belonging to the same architecture. We 
 #SBATCH --constraint=[sandybridge|haswell|skylake].
 
 
+##########################################################################
+# show the past job history for the given user with given starting time
+##########################################################################
 
-
+we can do it like this:
+sacct -S 2019-02-01 -u taylodl4 --format=User,JobID,Jobname,partition,state,time,start,end,elapsed,MaxRss,nnodes,ncpus,nodelist
 
