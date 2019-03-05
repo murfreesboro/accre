@@ -51,3 +51,63 @@ sacct -S 2019-02-01 -u taylodl4 --format=User,JobID,Jobname,partition,state,time
 ############################################
 sinfoprobs, using this command to show to failed node. For more information you can see the wiki page of slurm.
 
+
+########################################################################################################
+# slurm global trouble for March 5, 2019
+########################################################################################################
+today we had s global slurm trouble. The slurm commands do not response. Like squeue, it gives:
+slurm_load_jobs error: Socket timed out on send/recv operation
+
+1) Checking the slurm server, can ping; network seems to be good.
+
+2) checking the slurm daemon, it is dead and does not responds:
+   scontrol ping
+   
+   this command pings the slurm controller and we found that it does not response.
+
+3) try to restart the slurm service, but does not work - slurm still not responsive.
+
+4) from the log of the slurm it seems the slurm daemon in the compute node try to kill job, but it can not be killed;
+   also the controller also send siganal to kill these jobs but also failed. So the signal sending process is ongoing.
+   this is the reason why it shows a lot of RPC error.
+   this is done by checking /var/log/slurm/slurmd.log in any compute node
+
+5) begin to kill all of processes with "kill -9" which stops slurm to be responsive
+   Go in the node, check from `slurmd.log` which processes it is attempting to kill and kill them with `kill -9`
+
+   for additional checking with these abnormal processes, we can use "lsof -p (process ID)"  and "strace -p (processID)" to check it.
+
+3. lsof 一切皆文件
+lsof（list open files）是一个查看当前系统文件的工具。在linux环境下，任何事物都以文件的形式存在，通过文件不仅仅可以访问常规数据，还可以访问网络连接和硬件。如传输控制协议 (TCP) 和用户数据报协议 (UDP) 套接字等，系统在后台都为该应用程序分配了一个文件描述符，该文件描述符提供了大量关于这个应用程序本身的信息。
+
+lsof打开的文件可以是：
+
+普通文件
+目录
+网络文件系统的文件
+字符或设备文件
+(函数)共享库
+管道，命名管道
+符号链接
+网络文件（例如：NFS file、网络socket，unix域名socket）
+还有其它类型的文件，等等
+3.1. 命令参数
+-a 列出打开文件存在的进程
+-c<进程名> 列出指定进程所打开的文件
+-g 列出GID号进程详情
+-d<文件号> 列出占用该文件号的进程
++d<目录> 列出目录下被打开的文件
++D<目录> 递归列出目录下被打开的文件
+-n<目录> 列出使用NFS的文件
+-i<条件> 列出符合条件的进程。（4、6、协议、:端口、 @ip ）
+-p<进程号> 列出指定进程号所打开的文件
+-u 列出UID号进程详情
+
+6. strace 跟踪进程中的系统调用
+strace常用来跟踪进程执行时的系统调用和所接收的信号。 在Linux世界，进程不能直接访问硬件设备，当进程需要访问硬件设备(比如读取磁盘文件，接收网络数据等等)时，必须由用户态模式切换至内核态模式，通过系统调用访问硬件设备。strace可以跟踪到一个进程产生的系统调用,包括参数，返回值，执行消耗的时间。
+
+6.1. 输出参数含义
+每一行都是一条系统调用，等号左边是系统调用的函数名及其参数，右边是该调用的返回值。 strace 显示这些调用的参数并返回符号形式的值。strace 从内核接收信息，而且不需要以任何特殊的方式来构建内核。
+
+  
+6) after killed all pf pending-kill processes now the slurm is back to normal. But we do not know what trigger this to happen.
