@@ -111,3 +111,6 @@ strace常用来跟踪进程执行时的系统调用和所接收的信号。 在L
 
   
 6) after killed all pf pending-kill processes now the slurm is back to normal. But we do not know what trigger this to happen.
+
+What we kill are the zombie processes. They are the jobs which finished but somehow the slurm/system can not get the system resource back. These zombie processes have 
+a special state in PS command, which is "Z"; so they also have a clear state in the slurm, too.
