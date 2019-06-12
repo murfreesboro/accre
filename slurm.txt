@@ -6,6 +6,12 @@ scontrol:
 scontrol show -dd job=jobID
 this is used to show the "running job" status. -dd will print out the slurm script for that job.
 
+
+#######################################
+scontrol to change job priority value:
+#######################################
+scontrol update jobid <job_id> priority <desired_priority>
+
 #########################
 squeue - Job States
 #########################
@@ -19,8 +25,6 @@ CG - Job is completing
 for the C7, you do "ssh sched-vip"
 this server will let you enter into the slurm server box. And check the /var/log/slurm/slurmctld*.log
 this is the slurm log for the slurm jobs
-
-for the C6, "ssh slurmsched1"; then check the /var/log/messages
 
 #########################
 # slurm can not produce an output file:
