@@ -205,7 +205,7 @@
 % ---------------------------------------------------------------------
 
 %% preamble
-\title[Programming with Scala]
+\title{Programming with Scala}
 \author{Fenglai Liu}
 \institute[ACCRE]{fenglai@accre.vanderbilt.edu}
 
@@ -228,6 +228,20 @@
 \end{frame}
 
 % -------------------------------------------------------------
+\begin{frame}
+\frametitle{Functions and data are separate}
+%    \frametitle{}
+
+\begin{block}{}
+ %\begin{itemize}
+ % \item data defines the entity;
+  %\item function transforms the data from one form to the other.
+ %\end{itemize}
+\end{block}
+
+\end{frame}
+
+% -------------------------------------------------------------
 \begin{frame}[fragile]
 %    \frametitle{}
 
@@ -242,35 +256,6 @@
 \begin{block}{What is ``Call by name'' (from Wikipedia)?}
  Call by name is an evaluation strategy where the arguments to a function are not evaluated before the function is called - 
  rather, they are substituted directly into the function body and then left to be evaluated whenever they appear in the function.
-\end{block}
-
-
-\begin{verbatim}
-int abs_sum (int a, int b) {
-  int sum = 0;
-  sum  = abs(a);
-  sum += abs(b);
-  return sum;
-}
-\end{verbatim}
-
-\begin{verbatim}
-int abs_sum (int a, int b) {
-  retrun abs(a) + abs(b);
-}
-\end{verbatim}
-
-In the above example, the first example concentrates on how we can derive sum based 
-on two input integers step by step. 
-
-In the second example, we consider the abs\_sum function as a transformation between 
-abs function based on the integer variables. 
-
-\begin{block}{key features of IP and FP}
- \begin{description}
- \item [IP] instructions on the data
- \item [FP] transformations on the data
-\end{description}
 \end{block}
 
 \end{frame}
