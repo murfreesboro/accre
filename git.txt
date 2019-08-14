@@ -29,3 +29,11 @@ finally checkout that branch
 
 now we can do changing file name, changing eb files etc. and finally git push 
 will send the modifications to the remote end
+
+################################################
+# this is used to add other people's repo 
+# (like vanzod) into mine and checkout his branch
+################################################
+git remote add theirusername https://github.com/theirusername/reponame
+git fetch theirusername
+git checkout -b mynamefortheirbranch theirusername/theirbranch
