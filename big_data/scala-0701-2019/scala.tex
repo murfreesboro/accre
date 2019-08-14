@@ -228,6 +228,73 @@
 \end{frame}
 
 % -------------------------------------------------------------
+\begin{frame}[fragile]
+\frametitle{Input parameter for functions are in ``val'' type}
+%    \frametitle{}
+
+\begin{verbatim}
+def isDoubleNum(s: String): Boolean = {
+   .....
+}
+\end{verbatim}
+The input string ``s'' above is a constant input passing into function, you can not change
+this input. Hence in this sense, you do not need to say whether it's ``val'' or ``var'', since
+it must be ``val''.
+
+\end{frame}
+
+% -------------------------------------------------------------
+\begin{frame}[fragile]
+\frametitle{How Scala interprets function}
+%    \frametitle{}
+
+\begin{block}{Functions is a group of expressions}
+ 
+\end{block}
+
+
+The input string ``s'' above is a constant input passing into function, you can not change
+this input. Hence in this sense, you do not need to say whether it's ``val'' or ``var'', since
+it must be ``val''.
+
+\end{frame}
+
+
+% -------------------------------------------------------------
+\begin{frame}[fragile]
+\frametitle{Pattern Matching}
+%    \frametitle{}
+
+Pattern maching is an advanced feature in Scala comparing with the simple ``switch'' in Java/C++.
+In Java, ``swtich'' controls how the instruction flows; but in Scala the pattern matching is a more powerful ``switch'':
+
+\begin{verbatim}
+// oriMem is an input string
+val typ: String = memUnitType(oriMem)
+typ match {
+     case "g"   => (oriMem.substring(0,oriMem.indexOf(typ)).toDouble)*1024*1024
+     case "m"  => (oriMem.substring(0,oriMem.indexOf(typ)).toDouble)*1024
+     case _      => oriMem.substring(0,oriMem.indexOf(typ)).toDouble
+}
+\end{verbatim}
+``case \_" indicates all of other cases, like ``default'' in the switch.
+
+\end{frame}
+
+% -------------------------------------------------------------
+\begin{frame}
+\frametitle{Foundamental modules in Scala}
+%    \frametitle{}
+
+\begin{block}{String}
+ 
+\end{block}
+
+
+\end{frame}
+
+
+% -------------------------------------------------------------
 \begin{frame}
 \frametitle{Functions and data are separate}
 %    \frametitle{}
