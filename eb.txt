@@ -1,6 +1,0 @@
-
-###################################################
-# creating a patch
-###################################################
-diff -Naur standard_moodle my_moodle > patch.txt
-mv the patch.txt and add in the checksum, eb can directly apply it.
